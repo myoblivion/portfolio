@@ -20,6 +20,7 @@ import {
   FiMenu,
   FiX,
 } from "react-icons/fi";
+import { AiOutlineLink } from "react-icons/ai";
 import { DiPhotoshop } from "react-icons/di";
 import { FaGitAlt } from "react-icons/fa";
 import logo from "./assets/transparent.png";
@@ -155,6 +156,13 @@ function App() {
               rel="noopener noreferrer"
             >
               <FiGithub />
+            </a>
+            <a
+              href="https://www.upwork.com/freelancers/~018deafe68b8dec6a4?mp_source=share"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <AiOutlineLink />
             </a>
             <a
               href="https://www.linkedin.com/in/france-lee-0747781b1/"
