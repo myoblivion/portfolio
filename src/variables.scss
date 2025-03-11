@@ -1,0 +1,123 @@
+// Add to main.scss
+
+.hero {
+    .profile-image {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 2rem;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid $accent;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+  
+  .about {
+    padding: 8rem 2rem;
+    background: $primary;
+  
+    .about-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 4rem;
+      margin-top: 3rem;
+  
+      .details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+  
+      .tech-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+  
+        .badge {
+          background: rgba($accent, 0.1);
+          color: $accent;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+  
+  .portfolio-section {
+    padding: 8rem 2rem;
+  
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+  
+      .project-card {
+        background: $primary;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s;
+  
+        &:hover {
+          transform: translateY(-5px);
+        }
+  
+        .project-image {
+          height: 200px;
+          overflow: hidden;
+          
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+          }
+  
+          &:hover img {
+            transform: scale(1.1);
+          }
+        }
+  
+        .project-info {
+          padding: 1.5rem;
+  
+          .tech-stack {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+  
+            .tech {
+              background: $dark;
+              color: $text;
+              padding: 0.25rem 0.75rem;
+              border-radius: 15px;
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .about .about-grid {
+      grid-template-columns: 1fr;
+  
+      .details {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+    .portfolio-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }

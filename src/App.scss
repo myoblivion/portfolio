@@ -1,0 +1,27 @@
+@import 'variables';
+
+
+div#root {
+    width: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
+
+.portfolio-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  
+  main {
+    flex: 1;
+    padding: 0;
+    max-width: 100%;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
