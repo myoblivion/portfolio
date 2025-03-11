@@ -76,12 +76,16 @@ nav {
   }
 }
 @media (max-width: 768px) {
+  .skills {
+    padding: 5rem 3px !important;
+    background: #ecf0f1;
+  }
   nav {
     padding: 0.5rem 5% !important;
   }
   .hero .profile-image {
     flex: 1;
-    max-width: 100px !important;
+    max-width: 150px !important;
     margin-top: 11%;
     border-radius: 50%;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -794,8 +798,11 @@ footer {
 }
 
 @media (max-width: 768px) {
+  .skill-card {
+    padding: 1rem !important;
+  }
   .skills-grid {
-    gap: 1rem;
+    gap: 10px;
   }
   .hero {
     flex-direction: column-reverse;

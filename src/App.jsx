@@ -122,7 +122,10 @@ function App() {
           ))}
         </ul>
       </nav>
-      <div className={`menu-backdrop ${isMenuOpen ? 'active' : ''}`} onClick={closeMenu} />
+      <div
+        className={`menu-backdrop ${isMenuOpen ? "active" : ""}`}
+        onClick={closeMenu}
+      />
 
       <section id="home" className="hero">
         <div className="hero-content">
@@ -385,17 +388,17 @@ function App() {
         <div className="top-border" />
         <div className="footer-content">
           <div className="social-links">
-            <a href="#" className="social-icon">
+            <a href="https://github.com/myoblivion" className="social-icon">
               <FiGithub />
-              <span className="hover-text">GitHub</span>
             </a>
-            <a href="#" className="social-icon">
+            <a
+              href="https://www.linkedin.com/in/france-lee-0747781b1/"
+              className="social-icon"
+            >
               <FiLinkedin />
-              <span className="hover-text">LinkedIn</span>
             </a>
-            <a href="#" className="social-icon">
+            <a href="mailto:francelee594@gmail.com" className="social-icon">
               <FiMail />
-              <span className="hover-text">Email</span>
             </a>
           </div>
           <div className="footer-info">
