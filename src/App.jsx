@@ -34,6 +34,7 @@ const NAV_ITEMS = [
   { id: "skills", label: "Skills" },
   { id: "portfolio", label: "Portfolio" },
   { id: "experience", label: "Experience" },
+  { id: "reviews", label: "Reviews" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -157,6 +158,51 @@ const EXPERIENCE = [
       "Built responsive, high-converting platforms using custom WordPress/PHP theme development.",
       "Implemented SEO strategies and technical analytics integrations.",
     ],
+  },
+];
+
+const REVIEWS = [
+  {
+    title: "Database Connect Wordpress Error Need Fix now",
+    text: "France is truly exceptional! He operates at an impressive speed and possesses extensive knowledge of WordPress. I value his communication skills and professionalism so much. I will certainly consider hiring...",
+    date: "Sep 12, 2024",
+    rating: 5,
+    badges: ["Clear Communicator", "Professional"],
+  },
+  {
+    title: "UI Developer for UI Layout Issue Fix",
+    text: "I reached out to France to help with some web development and to fix a few bugs on my site. I was genuinely impressed by the quality and punctuality of his work. He really got what I wanted and delivered brilliantly on the task. I'd definitely collaborate with him again in a heartbeat.",
+    date: "Oct 12, 2023",
+    rating: 5,
+    badges: ["Committed to Quality", "Reliable", "Collaborative"],
+  },
+  {
+    title: "Wordpress developer needed URGENTLY!",
+    text: "Really pleased with the work with France. He developed a 5-page landing page that nicely met our needs. The AI-generated images were of good quality and the overall content and design were well-thought-out. He's a professional and worked efficiently. A solid choice for web design projects.",
+    date: "Jan 23, 2024",
+    rating: 5,
+    badges: ["Professional", "Committed to Quality"],
+  },
+  {
+    title: "Development of comprehensive Readme",
+    text: "Great to work with. Helped us in our work and delivered on time!",
+    date: "Apr 5, 2024",
+    rating: 5,
+    badges: ["Collaborative", "Reliable"],
+  },
+  {
+    title: "Resize RTSP Live Video Camera Feed",
+    text: "Great experience! Very responsive!",
+    date: "Jun 7, 2024",
+    rating: 5,
+    badges: ["Clear Communicator"],
+  },
+  {
+    title: "Custom Programming Services",
+    text: "France is an honest and dedicated programmer. He is capable and has shown out-of-the-box thinking and workarounds more than once when we have obstacles. I recommend using his services.",
+    date: "Apr 22, 2025",
+    rating: 5,
+    badges: [],
   },
 ];
 
@@ -588,9 +634,50 @@ function App() {
           </div>
         </section>
 
-        <section id="contact" className="section-padding">
+        {/* --- NEW REVIEWS SECTION --- */}
+        <section id="reviews" className="section-padding">
           <div className="section-header" data-reveal>
             <span className="section-kicker">05</span>
+            <h2>Client Feedback</h2>
+          </div>
+
+          <div className="reviews-grid">
+            {REVIEWS.map((review, index) => (
+              <div
+                className="review-card glass-panel"
+                key={index}
+                data-reveal
+                style={{ transitionDelay: `${index * 60}ms` }}
+              >
+                <div className="review-header">
+                  <div className="review-stars">
+                    {[...Array(review.rating)].map((_, idx) => (
+                      <FiStar key={idx} className="star-icon" fill="currentColor" />
+                    ))}
+                  </div>
+                  <span className="review-date">{review.date}</span>
+                </div>
+                
+                <h3 className="review-title">{review.title}</h3>
+                <p className="review-text">"{review.text}"</p>
+                
+                {review.badges.length > 0 && (
+                  <div className="review-badges">
+                    {review.badges.map((badge) => (
+                      <span key={badge} className="review-badge">
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="contact" className="section-padding">
+          <div className="section-header" data-reveal>
+            <span className="section-kicker">06</span>
             <h2>Get In Touch</h2>
           </div>
 

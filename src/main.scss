@@ -961,6 +961,85 @@ footer {
   }
 }
 
+/* --- REVIEWS SECTION STYLES --- */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.review-card {
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition), border-color var(--transition),
+    background-color var(--transition), box-shadow var(--transition);
+
+  &:hover {
+    transform: translateY(-6px);
+    border-color: rgba(103, 232, 249, 0.2);
+    background-color: rgba(18, 30, 48, 0.88);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.review-stars {
+  display: flex;
+  gap: 0.2rem;
+  color: var(--accent-4);
+
+  .star-icon {
+    font-size: 1.1rem;
+  }
+}
+
+.review-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted-2);
+}
+
+.review-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+
+.review-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(226, 232, 240, 0.82);
+  font-style: italic;
+  margin-bottom: 1.2rem;
+  flex: 1;
+}
+
+.review-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.review-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+}
+
 .contact-container {
   align-items: stretch;
 }
@@ -1162,7 +1241,8 @@ footer {
   }
 
   .skills-grid,
-  .portfolio-grid {
+  .portfolio-grid,
+  .reviews-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1268,6 +1348,7 @@ footer {
 
   .skills-grid,
   .portfolio-grid,
+  .reviews-grid,
   .mini-grid {
     grid-template-columns: 1fr;
   }
@@ -1314,6 +1395,7 @@ footer {
   .metric-card,
   .skill-card,
   .project-card,
+  .review-card,
   .timeline-content,
   .contact-info,
   .contact-form,
