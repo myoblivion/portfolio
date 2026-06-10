@@ -26,6 +26,14 @@ import {
 import { AiOutlineLink } from "react-icons/ai";
 import { FaReact, FaNodeJs, FaWordpress } from "react-icons/fa";
 import profileImage from "./assets/profile.png";
+
+import playsafe88Shot from "./assets/sites/playsafe88.png";
+import geniusosPlatformShot from "./assets/sites/geniusos-platform.png";
+import vintageLetterShot from "./assets/sites/vintage-letter-co.png";
+import crownHoldemShot from "./assets/sites/crown-holdem.png";
+import stingrayPaymentsShot from "./assets/sites/stingray-city-payments.png";
+import dartOfRositaShot from "./assets/sites/d-art-of-rosita.png";
+
 import "./main.scss";
 
 const NAV_ITEMS = [
@@ -40,11 +48,20 @@ const NAV_ITEMS = [
 
 const PORTFOLIO_ITEMS = [
   {
+    url: "#",
+    title: "D' Art of Rosita",
+    description:
+      "Dynamic web application featuring responsive modern styling and robust backend integration for seamless data management.",
+    tech: ["React", "Vite", "SCSS", "Supabase"],
+    screenshot: dartOfRositaShot,
+  },
+  {
     url: "http://playsafe88.com/",
     title: "Playsafe88",
     description:
       "Custom high-performance casino forum and community platform built for speed, clarity, and stable user flows.",
     tech: ["React", "Python", "Performance"],
+    screenshot: playsafe88Shot,
   },
   {
     url: "#",
@@ -52,6 +69,7 @@ const PORTFOLIO_ITEMS = [
     description:
       "Automated content migration tool utilizing local LLM workflows for structured parsing and transformation.",
     tech: ["React", "Python", "Ollama AI"],
+    screenshot: null,
   },
   {
     url: "https://geniusos.co/",
@@ -59,6 +77,7 @@ const PORTFOLIO_ITEMS = [
     description:
       "Complex system architecture and full-stack implementation with scalable delivery and modern UI execution.",
     tech: ["React", "Node.js", "AWS"],
+    screenshot: geniusosPlatformShot,
   },
   {
     url: "https://t.me/vip_reward_bot",
@@ -66,6 +85,7 @@ const PORTFOLIO_ITEMS = [
     description:
       "Automated referral logic and persistent data handling deployed on DigitalOcean for reliable user automation.",
     tech: ["Node.js", "Telegram API", "MongoDB"],
+    screenshot: null,
   },
   {
     url: "https://vintageletter.co/",
@@ -73,6 +93,7 @@ const PORTFOLIO_ITEMS = [
     description:
       "E-commerce platform with integrated AI chatbot capabilities and a polished content-first shopping experience.",
     tech: ["WordPress", "PHP", "Gutenberg"],
+    screenshot: vintageLetterShot,
   },
   {
     url: "https://crownholdem.com/",
@@ -80,6 +101,7 @@ const PORTFOLIO_ITEMS = [
     description:
       "High-performance gaming portal with refined layout systems and fast-loading interface patterns.",
     tech: ["PHP", "MySQL", "React"],
+    screenshot: crownHoldemShot,
   },
   {
     url: "https://stingraycitypayment.com/",
@@ -87,6 +109,7 @@ const PORTFOLIO_ITEMS = [
     description:
       "Secure payment gateway integration for travel booking with practical API workflows and dependable UX.",
     tech: ["Laravel", "API Integration"],
+    screenshot: stingrayPaymentsShot,
   },
 ];
 
@@ -569,37 +592,47 @@ function App() {
             {PORTFOLIO_ITEMS.map((item, index) => {
               const isLink = item.url && item.url !== "#";
               const CardTag = isLink ? "a" : "article";
+              const hasPreview = Boolean(item.screenshot);
 
               return (
                 <CardTag
                   key={item.title}
                   {...(isLink ? { href: item.url, target: "_blank", rel: "noreferrer noopener" } : {})}
-                  className="project-card glass-panel"
+                  className={`project-card glass-panel ${hasPreview ? "has-preview" : "no-preview"}`}
                   data-reveal
                   style={{ transitionDelay: `${index * 60}ms` }}
                 >
-                  <div className="card-top">
-                    <div className="card-badge">
-                      <FiFolder />
-                      <span>Selected Work</span>
+                  {hasPreview ? (
+                    <div className="project-preview" aria-hidden="true">
+                      <img src={item.screenshot} alt="" className="project-preview-image" />
+                      <div className="project-preview-overlay" />
                     </div>
-                    <div className="card-link">{isLink ? <FiExternalLink /> : <FiCode />}</div>
-                  </div>
+                  ) : null}
 
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
+                  <div className="project-content">
+                    <div className="card-top">
+                      <div className="card-badge">
+                        <FiFolder />
+                        <span>Selected Work</span>
+                      </div>
+                      <div className="card-link">{isLink ? <FiExternalLink /> : <FiCode />}</div>
+                    </div>
 
-                  <div className="tech-stack">
-                    {item.tech.map((tech) => (
-                      <span key={tech} className="tech-pill">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
 
-                  <div className="project-footer">
-                    <span>Open project</span>
-                    <FiArrowRight />
+                    <div className="tech-stack">
+                      {item.tech.map((tech) => (
+                        <span key={tech} className="tech-pill">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="project-footer">
+                      <span>Open project</span>
+                      <FiArrowRight />
+                    </div>
                   </div>
                 </CardTag>
               );
@@ -634,7 +667,6 @@ function App() {
           </div>
         </section>
 
-        {/* --- NEW REVIEWS SECTION --- */}
         <section id="reviews" className="section-padding">
           <div className="section-header" data-reveal>
             <span className="section-kicker">05</span>
@@ -657,10 +689,10 @@ function App() {
                   </div>
                   <span className="review-date">{review.date}</span>
                 </div>
-                
+
                 <h3 className="review-title">{review.title}</h3>
                 <p className="review-text">"{review.text}"</p>
-                
+
                 {review.badges.length > 0 && (
                   <div className="review-badges">
                     {review.badges.map((badge) => (
