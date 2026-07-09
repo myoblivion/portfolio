@@ -22,6 +22,7 @@ import {
   FiShield,
   FiTrendingUp,
   FiCheckCircle,
+  FiArrowUp,
 } from "react-icons/fi";
 import { AiOutlineLink } from "react-icons/ai";
 import { FaReact, FaNodeJs, FaWordpress } from "react-icons/fa";
@@ -33,6 +34,7 @@ import vintageLetterShot from "./assets/sites/vintage-letter-co.png";
 import crownHoldemShot from "./assets/sites/crown-holdem.png";
 import stingrayPaymentsShot from "./assets/sites/stingray-city-payments.png";
 import dartOfRositaShot from "./assets/sites/d-art-of-rosita.png";
+import cryptoxShot from "./assets/sites/cryptox-platform.png";
 
 import "./main.scss";
 
@@ -47,6 +49,14 @@ const NAV_ITEMS = [
 ];
 
 const PORTFOLIO_ITEMS = [
+  {
+    url: "https://crypto-trading-platform-puce-two.vercel.app/",
+    title: "CryptoX Exchange",
+    description:
+      "Institutional-grade crypto trading platform with a live market terminal, real-time order books, and secure custody onboarding for fast-moving traders.",
+    tech: ["React", "Node.js", "WebSockets", "Trading Engine"],
+    screenshot: cryptoxShot,
+  },
   {
     url: "#",
     title: "D' Art of Rosita",
@@ -247,20 +257,130 @@ const SOCIAL_LINKS = [
   },
 ];
 
+/* Detects a fine pointer (mouse/trackpad) with hover support and no
+   reduced-motion preference. Cursor-reactive effects only run when this
+   is true, so touch devices stay lightweight and accessibility prefs
+   are always respected. */
+function useRichPointer() {
+  const [richPointer, setRichPointer] = useState(false);
+
+  useEffect(() => {
+    const hoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const update = () => setRichPointer(hoverQuery.matches && !motionQuery.matches);
+    update();
+
+    hoverQuery.addEventListener("change", update);
+    motionQuery.addEventListener("change", update);
+    return () => {
+      hoverQuery.removeEventListener("change", update);
+      motionQuery.removeEventListener("change", update);
+    };
+  }, []);
+
+  return richPointer;
+}
+
+/* Tilt card: subtle 3D perspective tilt that tracks the pointer,
+   applied via CSS custom properties so it's cheap to update per frame. */
+function TiltCard({ as: Tag = "div", className = "", richPointer, ...props }) {
+  const ref = useRef(null);
+  const rafRef = useRef(0);
+
+  const handleMouseMove = (event) => {
+    if (!richPointer || !ref.current) return;
+    cancelAnimationFrame(rafRef.current);
+    const el = ref.current;
+    const { left, top, width, height } = el.getBoundingClientRect();
+    const px = (event.clientX - left) / width;
+    const py = (event.clientY - top) / height;
+
+    rafRef.current = requestAnimationFrame(() => {
+      const rotateY = (px - 0.5) * 10;
+      const rotateX = (0.5 - py) * 10;
+      el.style.setProperty("--tilt-x", `${rotateX.toFixed(2)}deg`);
+      el.style.setProperty("--tilt-y", `${rotateY.toFixed(2)}deg`);
+      el.style.setProperty("--glow-x", `${px * 100}%`);
+      el.style.setProperty("--glow-y", `${py * 100}%`);
+    });
+  };
+
+  const handleMouseLeave = () => {
+    if (!ref.current) return;
+    cancelAnimationFrame(rafRef.current);
+    ref.current.style.setProperty("--tilt-x", "0deg");
+    ref.current.style.setProperty("--tilt-y", "0deg");
+  };
+
+  return (
+    <Tag
+      ref={ref}
+      className={`tilt-card ${className}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    />
+  );
+}
+
+/* Magnetic button: nudges toward the cursor within its bounds,
+   then springs back on leave. */
+function MagneticButton({ className = "", children, richPointer, ...props }) {
+  const ref = useRef(null);
+
+  const handleMouseMove = (event) => {
+    if (!richPointer || !ref.current) return;
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const x = (event.clientX - left - width / 2) * 0.28;
+    const y = (event.clientY - top - height / 2) * 0.35;
+    ref.current.style.transform = `translate(${x}px, ${y}px)`;
+  };
+
+  const handleMouseLeave = () => {
+    if (!ref.current) return;
+    ref.current.style.transform = "translate(0, 0)";
+  };
+
+  return (
+    <a
+      ref={ref}
+      className={`magnetic ${className}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      {children}
+    </a>
+  );
+}
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const navRef = useRef(null);
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
+  const spotlightRef = useRef(null);
+
+  const richPointer = useRichPointer();
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const closeMenu = () => setIsMenuOpen(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 24);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 24);
+      setShowBackToTop(window.scrollY > 800);
+
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      setScrollProgress(max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0);
+    };
 
     const handleClickOutside = (event) => {
       if (
@@ -364,16 +484,56 @@ function App() {
     };
   }, []);
 
+  /* Signature effect: a cursor-following spotlight that reveals a faint
+     circuit-grid pattern behind the glass panels, echoing the terminal /
+     "France.dev" brand mark. Only active for fine pointers. */
+  useEffect(() => {
+    if (!richPointer || !spotlightRef.current) return undefined;
+
+    let rafId = 0;
+    const el = spotlightRef.current;
+
+    const handlePointerMove = (event) => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        el.style.setProperty("--spot-x", `${event.clientX}px`);
+        el.style.setProperty("--spot-y", `${event.clientY}px`);
+        el.style.opacity = "1";
+      });
+    };
+
+    const handlePointerLeave = () => {
+      el.style.opacity = "0";
+    };
+
+    window.addEventListener("mousemove", handlePointerMove, { passive: true });
+    document.addEventListener("mouseleave", handlePointerLeave);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("mousemove", handlePointerMove);
+      document.removeEventListener("mouseleave", handlePointerLeave);
+    };
+  }, [richPointer]);
+
   const handleNavClick = (id) => {
     setActiveSection(id);
     closeMenu();
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="app">
+      <div className="scroll-progress" style={{ transform: `scaleX(${scrollProgress / 100})` }} />
+
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
       <div className="ambient ambient-three" />
+
+      {richPointer && <div ref={spotlightRef} className="cursor-spotlight" aria-hidden="true" />}
 
       <nav ref={navRef} className={`nav-shell ${scrolled ? "scrolled" : ""} ${isMenuOpen ? "menu-open" : ""}`}>
         <a className="brand" href="#home" onClick={() => handleNavClick("home")} aria-label="Go to home">
@@ -418,7 +578,7 @@ function App() {
               Senior Full-Stack Engineer · Available for selective projects
             </div>
 
-            <h1>France Lee</h1>
+            <h1 className="hero-title">France Lee</h1>
             <h2>Designing refined digital systems with code, clarity, and speed.</h2>
 
             <p className="hero-description">
@@ -427,14 +587,24 @@ function App() {
             </p>
 
             <div className="hero-actions">
-              <a href="#portfolio" className="cta primary" onClick={() => handleNavClick("portfolio")}>
+              <MagneticButton
+                href="#portfolio"
+                className="cta primary"
+                richPointer={richPointer}
+                onClick={() => handleNavClick("portfolio")}
+              >
                 <FiArrowRight />
                 View Projects
-              </a>
-              <a href="#contact" className="cta secondary" onClick={() => handleNavClick("contact")}>
+              </MagneticButton>
+              <MagneticButton
+                href="#contact"
+                className="cta secondary"
+                richPointer={richPointer}
+                onClick={() => handleNavClick("contact")}
+              >
                 <FiMail />
                 Get In Touch
-              </a>
+              </MagneticButton>
             </div>
 
             <div className="hero-metrics">
@@ -564,10 +734,12 @@ function App() {
 
           <div className="skills-grid">
             {SKILLS.map((skill, index) => (
-              <article
+              <TiltCard
+                as="article"
                 className="skill-card glass-panel"
                 key={skill.name}
                 data-reveal
+                richPointer={richPointer}
                 style={{ transitionDelay: `${index * 70}ms` }}
               >
                 <div className="skill-top">
@@ -577,7 +749,7 @@ function App() {
                 <h3>{skill.name}</h3>
                 <p className="skill-tech">{skill.tech}</p>
                 <p className="skill-accent">{skill.accent}</p>
-              </article>
+              </TiltCard>
             ))}
           </div>
         </section>
@@ -591,15 +763,16 @@ function App() {
           <div className="portfolio-grid">
             {PORTFOLIO_ITEMS.map((item, index) => {
               const isLink = item.url && item.url !== "#";
-              const CardTag = isLink ? "a" : "article";
               const hasPreview = Boolean(item.screenshot);
 
               return (
-                <CardTag
+                <TiltCard
+                  as={isLink ? "a" : "article"}
                   key={item.title}
                   {...(isLink ? { href: item.url, target: "_blank", rel: "noreferrer noopener" } : {})}
                   className={`project-card glass-panel ${hasPreview ? "has-preview" : "no-preview"}`}
                   data-reveal
+                  richPointer={richPointer}
                   style={{ transitionDelay: `${index * 60}ms` }}
                 >
                   {hasPreview ? (
@@ -634,7 +807,7 @@ function App() {
                       <FiArrowRight />
                     </div>
                   </div>
-                </CardTag>
+                </TiltCard>
               );
             })}
           </div>
@@ -773,6 +946,15 @@ function App() {
           <p className="copyright">© {new Date().getFullYear()} All rights reserved.</p>
         </div>
       </footer>
+
+      <button
+        type="button"
+        className={`back-to-top ${showBackToTop ? "visible" : ""}`}
+        onClick={scrollToTop}
+        aria-label="Back to top"
+      >
+        <FiArrowUp />
+      </button>
     </div>
   );
 }
