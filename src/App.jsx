@@ -19,10 +19,8 @@ import {
   FiArrowRight,
   FiExternalLink,
   FiStar,
-  FiShield,
-  FiTrendingUp,
+  FiRadio,
   FiCheckCircle,
-  FiArrowUp,
 } from "react-icons/fi";
 import { AiOutlineLink } from "react-icons/ai";
 import { FaReact, FaNodeJs, FaWordpress } from "react-icons/fa";
@@ -38,18 +36,31 @@ import cryptoxShot from "./assets/sites/cryptox-platform.png";
 
 import "./main.scss";
 
+/* Each nav entry is a stage in the profile the visitor moves through,
+   the way a HUD menu numbers the screens in a run. Order carries the
+   sequence, so the number is a real index, not decoration. */
 const NAV_ITEMS = [
-  { id: "home", label: "Home" },
-  { id: "about", label: "About" },
-  { id: "skills", label: "Skills" },
-  { id: "portfolio", label: "Portfolio" },
-  { id: "experience", label: "Experience" },
-  { id: "reviews", label: "Reviews" },
-  { id: "contact", label: "Contact" },
+  { id: "home", label: "Intro", sheet: "01" },
+  { id: "about", label: "Dossier", sheet: "02" },
+  { id: "skills", label: "Loadout", sheet: "03" },
+  { id: "portfolio", label: "Missions", sheet: "04" },
+  { id: "experience", label: "Record", sheet: "05" },
+  { id: "reviews", label: "Intel", sheet: "06" },
+  { id: "contact", label: "Comms", sheet: "07" },
+];
+
+/* Attribute readout used in the hero — a compact summary of where the
+   deeper skill cards below go into detail. */
+const ATTRIBUTES = [
+  { label: "Frontend", value: 92 },
+  { label: "Backend", value: 90 },
+  { label: "Cloud / DevOps", value: 85 },
+  { label: "AI Integration", value: 80 },
 ];
 
 const PORTFOLIO_ITEMS = [
   {
+    fig: "01",
     url: "https://crypto-trading-platform-puce-two.vercel.app/",
     title: "CryptoX Exchange",
     description:
@@ -58,6 +69,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: cryptoxShot,
   },
   {
+    fig: "02",
     url: "#",
     title: "D' Art of Rosita",
     description:
@@ -66,6 +78,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: dartOfRositaShot,
   },
   {
+    fig: "03",
     url: "http://playsafe88.com/",
     title: "Playsafe88",
     description:
@@ -74,6 +87,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: playsafe88Shot,
   },
   {
+    fig: "04",
     url: "#",
     title: "FeedScrapper AI",
     description:
@@ -82,6 +96,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: null,
   },
   {
+    fig: "05",
     url: "https://geniusos.co/",
     title: "geniusOS Platform",
     description:
@@ -90,6 +105,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: geniusosPlatformShot,
   },
   {
+    fig: "06",
     url: "https://t.me/vip_reward_bot",
     title: "VIP Rewards Telegram Bot",
     description:
@@ -98,6 +114,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: null,
   },
   {
+    fig: "07",
     url: "https://vintageletter.co/",
     title: "Vintage Letter Co.",
     description:
@@ -106,6 +123,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: vintageLetterShot,
   },
   {
+    fig: "08",
     url: "https://crownholdem.com/",
     title: "Crown Holdem",
     description:
@@ -114,6 +132,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: crownHoldemShot,
   },
   {
+    fig: "09",
     url: "https://stingraycitypayment.com/",
     title: "Stingray City Payments",
     description:
@@ -125,47 +144,62 @@ const PORTFOLIO_ITEMS = [
 
 const SKILLS = [
   {
+    tag: "MOD-01",
     name: "Frontend Development",
     icon: <FaReact />,
     tech: "React, React Native, Vue, JavaScript, TypeScript",
     accent: "UI systems, responsive motion, component architecture",
+    level: 92,
   },
   {
+    tag: "MOD-02",
     name: "Backend Architecture",
     icon: <FaNodeJs />,
     tech: "Node.js, PHP, Laravel, Python",
     accent: "APIs, business logic, automation, structured services",
+    level: 90,
   },
   {
+    tag: "MOD-03",
     name: "Cloud & DevOps",
     icon: <FiCloud />,
     tech: "AWS, DigitalOcean, CI/CD",
     accent: "Deployment pipelines, environments, reliability",
+    level: 85,
   },
   {
+    tag: "MOD-04",
     name: "AI Integration",
     icon: <FiCpu />,
     tech: "Ollama, OpenAI API, automation bots",
     accent: "LLM workflows, task automation, smart tooling",
+    level: 80,
   },
   {
+    tag: "MOD-05",
     name: "Database Design",
     icon: <FiDatabase />,
     tech: "MySQL, PostgreSQL, MongoDB",
     accent: "Schema design, querying, performance, data integrity",
+    level: 88,
   },
   {
+    tag: "MOD-06",
     name: "CMS & E-commerce",
     icon: <FaWordpress />,
     tech: "WordPress, Gutenberg, WooCommerce",
     accent: "Conversion-focused builds, editor-friendly delivery",
+    level: 84,
   },
 ];
 
+/* Service record, newest first — the same convention as a rank
+   ladder: the top row holds the current clearance tier. */
 const EXPERIENCE = [
   {
+    rev: "III",
     role: "Senior Freelance Engineer",
-    date: "Sep 2024 - Present",
+    date: "Sep 2024 — Present",
     company: "Self-Employed · Global Marketplaces",
     bullets: [
       "Architecting full-stack web and mobile applications for international clients.",
@@ -174,8 +208,9 @@ const EXPERIENCE = [
     ],
   },
   {
+    rev: "II",
     role: "Full-Stack Developer",
-    date: "Jan 2022 - Aug 2024",
+    date: "Jan 2022 — Aug 2024",
     company: "Black Spot Studio PH · Full-time",
     bullets: [
       "Led backend development for an AI CCTV system with facial and license plate recognition.",
@@ -184,8 +219,9 @@ const EXPERIENCE = [
     ],
   },
   {
+    rev: "I",
     role: "Web Developer",
-    date: "Jul 2020 - Feb 2021",
+    date: "Jul 2020 — Feb 2021",
     company: "Freelance · Manila",
     bullets: [
       "Built responsive, high-converting platforms using custom WordPress/PHP theme development.",
@@ -240,148 +276,73 @@ const REVIEWS = [
 ];
 
 const SOCIAL_LINKS = [
-  {
-    href: "https://github.com/myoblivion",
-    label: "GitHub",
-    icon: <FiGithub />,
-  },
-  {
-    href: "https://www.upwork.com/freelancers/~018deafe68b8dec6a4",
-    label: "Upwork",
-    icon: <AiOutlineLink />,
-  },
-  {
-    href: "https://www.linkedin.com/in/france-lee-0747781b1/",
-    label: "LinkedIn",
-    icon: <FiLinkedin />,
-  },
+  { href: "https://github.com/myoblivion", label: "GitHub", icon: <FiGithub /> },
+  { href: "https://www.upwork.com/freelancers/~018deafe68b8dec6a4", label: "Upwork", icon: <AiOutlineLink /> },
+  { href: "https://www.linkedin.com/in/france-lee-0747781b1/", label: "LinkedIn", icon: <FiLinkedin /> },
 ];
 
-/* Detects a fine pointer (mouse/trackpad) with hover support and no
-   reduced-motion preference. Cursor-reactive effects only run when this
-   is true, so touch devices stay lightweight and accessibility prefs
-   are always respected. */
-function useRichPointer() {
-  const [richPointer, setRichPointer] = useState(false);
-
-  useEffect(() => {
-    const hoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const update = () => setRichPointer(hoverQuery.matches && !motionQuery.matches);
-    update();
-
-    hoverQuery.addEventListener("change", update);
-    motionQuery.addEventListener("change", update);
-    return () => {
-      hoverQuery.removeEventListener("change", update);
-      motionQuery.removeEventListener("change", update);
-    };
-  }, []);
-
-  return richPointer;
-}
-
-/* Tilt card: subtle 3D perspective tilt that tracks the pointer,
-   applied via CSS custom properties so it's cheap to update per frame. */
-function TiltCard({ as: Tag = "div", className = "", richPointer, ...props }) {
-  const ref = useRef(null);
-  const rafRef = useRef(0);
-
-  const handleMouseMove = (event) => {
-    if (!richPointer || !ref.current) return;
-    cancelAnimationFrame(rafRef.current);
-    const el = ref.current;
-    const { left, top, width, height } = el.getBoundingClientRect();
-    const px = (event.clientX - left) / width;
-    const py = (event.clientY - top) / height;
-
-    rafRef.current = requestAnimationFrame(() => {
-      const rotateY = (px - 0.5) * 10;
-      const rotateX = (0.5 - py) * 10;
-      el.style.setProperty("--tilt-x", `${rotateX.toFixed(2)}deg`);
-      el.style.setProperty("--tilt-y", `${rotateY.toFixed(2)}deg`);
-      el.style.setProperty("--glow-x", `${px * 100}%`);
-      el.style.setProperty("--glow-y", `${py * 100}%`);
-    });
-  };
-
-  const handleMouseLeave = () => {
-    if (!ref.current) return;
-    cancelAnimationFrame(rafRef.current);
-    ref.current.style.setProperty("--tilt-x", "0deg");
-    ref.current.style.setProperty("--tilt-y", "0deg");
-  };
-
-  return (
-    <Tag
-      ref={ref}
-      className={`tilt-card ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      {...props}
-    />
-  );
-}
-
-/* Magnetic button: nudges toward the cursor within its bounds,
-   then springs back on leave. */
-function MagneticButton({ className = "", children, richPointer, ...props }) {
-  const ref = useRef(null);
-
-  const handleMouseMove = (event) => {
-    if (!richPointer || !ref.current) return;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
-    const x = (event.clientX - left - width / 2) * 0.28;
-    const y = (event.clientY - top - height / 2) * 0.35;
-    ref.current.style.transform = `translate(${x}px, ${y}px)`;
-  };
-
-  const handleMouseLeave = () => {
-    if (!ref.current) return;
-    ref.current.style.transform = "translate(0, 0)";
-  };
-
-  return (
-    <a
-      ref={ref}
-      className={`magnetic ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      {...props}
-    >
-      {children}
-    </a>
-  );
-}
+/* Rendered twice back-to-back and scrolled exactly 50%, this is the
+   classic seamless-marquee trick — no JS animation loop required. */
+const TICKER_ITEMS = [
+  "STATUS: ONLINE",
+  "FULL-STACK",
+  "REACT",
+  "NODE.JS",
+  "AWS",
+  "LARAVEL",
+  "AI INTEGRATION",
+  "OPEN TO WORK",
+  "CAVITE, PH",
+];
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [showBackToTop, setShowBackToTop] = useState(false);
 
-  const navRef = useRef(null);
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
-  const spotlightRef = useRef(null);
-
-  const richPointer = useRichPointer();
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const closeMenu = () => setIsMenuOpen(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 24);
-      setShowBackToTop(window.scrollY > 800);
+  const handleNavClick = (id) => {
+    setActiveSection(id);
+    closeMenu();
+  };
 
+  /* Single scroll listener, throttled with one rAF, driving two cheap
+     style reads. No layout-thrashing per-section measurement here —
+     that job belongs to the IntersectionObserver below. */
+  useEffect(() => {
+    let rafId = 0;
+    let ticking = false;
+
+    const update = () => {
       const doc = document.documentElement;
       const max = doc.scrollHeight - doc.clientHeight;
-      setScrollProgress(max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0);
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      setScrollProgress(max > 0 ? Math.min(100, (y / max) * 100) : 0);
+      ticking = false;
     };
 
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      rafId = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         isMenuOpen &&
@@ -393,18 +354,13 @@ function App() {
         closeMenu();
       }
     };
-
     const handleResize = () => {
-      if (window.innerWidth > 768) closeMenu();
+      if (window.innerWidth > 860) closeMenu();
     };
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
     document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener("resize", handleResize);
-
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("mousedown", handleClickOutside);
       window.removeEventListener("resize", handleResize);
     };
@@ -417,47 +373,23 @@ function App() {
     };
   }, [isMenuOpen]);
 
+  /* Active-section tracking via IntersectionObserver instead of a
+     scroll-driven getBoundingClientRect loop — native, GPU-friendly,
+     and doesn't run on every scroll frame. */
   useEffect(() => {
-    const sectionIds = NAV_ITEMS.map((item) => item.id);
-    let rafId = 0;
+    const sections = NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(Boolean);
 
-    const updateActiveSection = () => {
-      const scrollY = window.scrollY;
-      const navOffset = 140;
-      let current = "home";
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+    );
 
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-
-        const top = el.getBoundingClientRect().top + window.scrollY;
-        if (scrollY + navOffset >= top) {
-          current = id;
-        }
-      }
-
-      setActiveSection((prev) => (prev === current ? prev : current));
-    };
-
-    const onScroll = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(updateActiveSection);
-    };
-
-    const onResize = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(updateActiveSection);
-    };
-
-    updateActiveSection();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-    };
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -471,75 +403,34 @@ function App() {
           }
         });
       },
-      {
-        threshold: 0.16,
-        rootMargin: "0px 0px -10% 0px",
-      }
+      { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
     );
 
     revealTargets.forEach((el) => revealObserver.observe(el));
-
-    return () => {
-      revealObserver.disconnect();
-    };
+    return () => revealObserver.disconnect();
   }, []);
-
-  /* Signature effect: a cursor-following spotlight that reveals a faint
-     circuit-grid pattern behind the glass panels, echoing the terminal /
-     "France.dev" brand mark. Only active for fine pointers. */
-  useEffect(() => {
-    if (!richPointer || !spotlightRef.current) return undefined;
-
-    let rafId = 0;
-    const el = spotlightRef.current;
-
-    const handlePointerMove = (event) => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        el.style.setProperty("--spot-x", `${event.clientX}px`);
-        el.style.setProperty("--spot-y", `${event.clientY}px`);
-        el.style.opacity = "1";
-      });
-    };
-
-    const handlePointerLeave = () => {
-      el.style.opacity = "0";
-    };
-
-    window.addEventListener("mousemove", handlePointerMove, { passive: true });
-    document.addEventListener("mouseleave", handlePointerLeave);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener("mousemove", handlePointerMove);
-      document.removeEventListener("mouseleave", handlePointerLeave);
-    };
-  }, [richPointer]);
-
-  const handleNavClick = (id) => {
-    setActiveSection(id);
-    closeMenu();
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   return (
     <div className="app">
       <div className="scroll-progress" style={{ transform: `scaleX(${scrollProgress / 100})` }} />
 
-      <div className="ambient ambient-one" />
-      <div className="ambient ambient-two" />
-      <div className="ambient ambient-three" />
+      <div className="grain" aria-hidden="true" />
 
-      {richPointer && <div ref={spotlightRef} className="cursor-spotlight" aria-hidden="true" />}
+      <span className="hud-corner hc-tl" aria-hidden="true" />
+      <span className="hud-corner hc-tr" aria-hidden="true" />
+      <span className="hud-corner hc-bl" aria-hidden="true" />
+      <span className="hud-corner hc-br" aria-hidden="true" />
 
-      <nav ref={navRef} className={`nav-shell ${scrolled ? "scrolled" : ""} ${isMenuOpen ? "menu-open" : ""}`}>
+      <nav className={`nav-shell ${scrolled ? "scrolled" : ""}`}>
         <a className="brand" href="#home" onClick={() => handleNavClick("home")} aria-label="Go to home">
-          <span className="brand-mark">&lt;</span>
-          <span className="brand-text">France.dev</span>
-          <span className="brand-mark">/&gt;</span>
+          <span className="brand-box">FL</span>
+          <span className="brand-text">
+            France Lee
+            <span className="brand-status">
+              <span className="status-dot" />
+              Online · Open to work
+            </span>
+          </span>
         </a>
 
         <button
@@ -561,6 +452,7 @@ function App() {
                 onClick={() => handleNavClick(item.id)}
                 className={activeSection === item.id ? "active" : ""}
               >
+                <span className="tab-num">{item.sheet}</span>
                 {item.label}
               </a>
             </li>
@@ -571,115 +463,129 @@ function App() {
       <div className={`menu-backdrop ${isMenuOpen ? "active" : ""}`} onClick={closeMenu} />
 
       <main>
-        <section id="home" className="hero">
-          <div className="hero-copy" data-reveal>
-            <div className="eyebrow">
-              <FiTerminal />
-              Senior Full-Stack Engineer · Available for selective projects
+        <section id="home" className="hero hud-grid">
+          <span className="hero-spine" aria-hidden="true">
+            FULL-STACK ENGINEER — CLOUD — AI —
+          </span>
+
+          <div className="hero-inner">
+            <div className="hero-copy" data-reveal>
+              <div className="eyebrow">
+                <FiTerminal />
+                Operator Profile <span className="status-dot" /> Available for deployment
+              </div>
+
+              <h1 className="hero-title">FRANCE LEE</h1>
+              <h2>I design and build the systems that keep fast products running.</h2>
+
+              <p className="hero-description">
+                Full-stack engineer with 5+ years shipping web and mobile platforms, cloud
+                infrastructure, and AI-assisted tooling — from clean interfaces down to the APIs and
+                databases underneath them.
+              </p>
+
+              <div className="hero-actions">
+                <a href="#portfolio" className="cta primary" onClick={() => handleNavClick("portfolio")}>
+                  View missions
+                  <FiArrowRight />
+                </a>
+                <a href="#contact" className="cta secondary" onClick={() => handleNavClick("contact")}>
+                  <FiRadio />
+                  Open comms
+                </a>
+              </div>
+
+              <div className="stat-bars">
+                {ATTRIBUTES.map((attr) => (
+                  <div className="stat-bar" key={attr.label}>
+                    <span className="stat-bar-label">{attr.label}</span>
+                    <span className="stat-bar-track">
+                      <span className="stat-bar-fill" style={{ "--value": `${attr.value}%` }} />
+                    </span>
+                    <span className="stat-bar-value">{attr.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <h1 className="hero-title">France Lee</h1>
-            <h2>Designing refined digital systems with code, clarity, and speed.</h2>
-
-            <p className="hero-description">
-              I build premium web experiences, scalable platforms, AI-assisted workflows, and dependable backend
-              systems with a strong focus on visual quality, maintainability, and performance.
-            </p>
-
-            <div className="hero-actions">
-              <MagneticButton
-                href="#portfolio"
-                className="cta primary"
-                richPointer={richPointer}
-                onClick={() => handleNavClick("portfolio")}
-              >
-                <FiArrowRight />
-                View Projects
-              </MagneticButton>
-              <MagneticButton
-                href="#contact"
-                className="cta secondary"
-                richPointer={richPointer}
-                onClick={() => handleNavClick("contact")}
-              >
-                <FiMail />
-                Get In Touch
-              </MagneticButton>
-            </div>
-
-            <div className="hero-metrics">
-              <div className="metric-card">
-                <FiStar />
-                <strong>5+ Years</strong>
-                <span>Engineering modern products</span>
+            <div className="hero-visual" data-reveal>
+              <div className="pinned-photo">
+                <img src={profileImage} alt="France Lee" className="portrait-image" />
+                <span className="rank-ring" aria-hidden="true">
+                  <span className="rank-ring-track" />
+                  <span className="rank-label">LVL 05</span>
+                </span>
               </div>
-              <div className="metric-card">
-                <FiShield />
-                <strong>Reliable Delivery</strong>
-                <span>Stable, maintainable builds</span>
-              </div>
-              <div className="metric-card">
-                <FiTrendingUp />
-                <strong>High-Impact Work</strong>
-                <span>Performance-driven execution</span>
+              <div className="visual-tags">
+                <span className="tech-pill">React</span>
+                <span className="tech-pill">Node.js</span>
+                <span className="tech-pill">AWS</span>
+                <span className="tech-pill">Laravel</span>
               </div>
             </div>
           </div>
 
-          <div className="hero-visual" data-reveal>
-            <div className="portrait-shell">
-              <div className="portrait-ring" />
-              <div className="portrait-glow" />
-              <img src={profileImage} alt="France Lee" className="portrait-image" />
-
-              <div className="floating-card floating-card-one">
-                <FiBriefcase />
-                <div>
-                  <strong>Full-Stack Engineer</strong>
-                  <span>Product, backend, UI</span>
-                </div>
-              </div>
-
-              <div className="floating-card floating-card-two">
-                <FiCheckCircle />
-                <div>
-                  <strong>Open for work</strong>
-                  <span>Freelance or full-time</span>
-                </div>
-              </div>
+          <div className="status-strip">
+            <div className="ss-field">
+              <span className="ss-label">Callsign</span>
+              <span className="ss-value">France Lee</span>
+            </div>
+            <div className="ss-field">
+              <span className="ss-label">Class</span>
+              <span className="ss-value">Full-Stack / Cloud</span>
+            </div>
+            <div className="ss-field">
+              <span className="ss-label">Base</span>
+              <span className="ss-value">Cavite, PH</span>
+            </div>
+            <div className="ss-field">
+              <span className="ss-label">Status</span>
+              <span className="ss-value">Open to work</span>
+            </div>
+            <div className="ss-field ss-stage">
+              <span className="ss-label">Stage</span>
+              <span className="ss-value">01 / 07</span>
             </div>
           </div>
         </section>
 
+        <div className="ticker" aria-hidden="true">
+          <div className="ticker-track">
+            {[0, 1].map((rep) => (
+              <div className="ticker-set" key={rep}>
+                {TICKER_ITEMS.map((label) => (
+                  <span className="ticker-item" key={`${rep}-${label}`}>
+                    {label}
+                    <span className="dot">•</span>
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
         <section id="about" className="section-padding">
-          <div className="section-header" data-reveal>
-            <span className="section-kicker">01</span>
-            <h2>About Me</h2>
+          <div className="section-header" data-reveal data-ghost="02">
+            <span className="stage-tag">STAGE 02</span>
+            <h2>Dossier</h2>
           </div>
 
           <div className="about-grid">
-            <div className="about-copy glass-panel" data-reveal>
+            <div className="about-copy panel" data-reveal>
               <p>
-                Hello! I&apos;m a senior full-stack developer with over 5 years of experience engineering complex web
-                applications, mobile platforms, and automated software solutions.
+                I&apos;m a senior full-stack developer with over 5 years of experience engineering
+                complex web applications, mobile platforms, and automated software solutions.
               </p>
               <p>
-                My expertise spans modern JavaScript frameworks, advanced PHP/Laravel ecosystems, and integrating AI
-                tools like Ollama and Python scripts into production environments. Whether it&apos;s building polished
-                Gutenberg themes or deploying high-availability Telegram bots to DigitalOcean, I focus on clean,
-                scalable, and maintainable code.
+                My work spans modern JavaScript frameworks, PHP/Laravel ecosystems, and wiring AI
+                tools like Ollama and Python scripts into production environments — whether that&apos;s
+                a polished Gutenberg theme or a high-availability Telegram bot running on
+                DigitalOcean. Clean, scalable, maintainable code is the standard I hold every build to.
               </p>
 
               <div className="social-links">
                 {SOCIAL_LINKS.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    aria-label={link.label}
-                    className="social-button"
-                  >
+                  <a key={link.label} href={link.href} target="_blank" rel="noreferrer noopener" className="social-button">
                     {link.icon}
                     <span>{link.label}</span>
                   </a>
@@ -688,9 +594,11 @@ function App() {
             </div>
 
             <div className="about-sidebar" data-reveal>
-              <div className="info-card glass-panel">
-                <div className="info-title">Professional Snapshot</div>
-                <ul>
+              <div className="file-card panel">
+                <div className="file-title">
+                  <FiLayout /> Operative File
+                </div>
+                <ul className="file-list">
                   <li>
                     <span className="label">Location</span>
                     <span>Cavite, Philippines</span>
@@ -711,15 +619,15 @@ function App() {
               </div>
 
               <div className="mini-grid">
-                <div className="mini-card glass-panel">
-                  <FiLayout />
-                  <strong>Design-minded</strong>
-                  <span>Clean systems and spacing</span>
-                </div>
-                <div className="mini-card glass-panel">
+                <div className="mini-card panel">
                   <FiCode />
                   <strong>Developer-first</strong>
                   <span>Readable, scalable code</span>
+                </div>
+                <div className="mini-card panel">
+                  <FiBriefcase />
+                  <strong>Delivery-minded</strong>
+                  <span>Ships on schedule</span>
                 </div>
               </div>
             </div>
@@ -727,54 +635,51 @@ function App() {
         </section>
 
         <section id="skills" className="section-padding">
-          <div className="section-header" data-reveal>
-            <span className="section-kicker">02</span>
-            <h2>Technical Arsenal</h2>
+          <div className="section-header" data-reveal data-ghost="03">
+            <span className="stage-tag">STAGE 03</span>
+            <h2>Loadout</h2>
           </div>
 
           <div className="skills-grid">
-            {SKILLS.map((skill, index) => (
-              <TiltCard
-                as="article"
-                className="skill-card glass-panel"
-                key={skill.name}
-                data-reveal
-                richPointer={richPointer}
-                style={{ transitionDelay: `${index * 70}ms` }}
-              >
+            {SKILLS.map((skill) => (
+              <article className="skill-card panel" key={skill.name} data-reveal>
                 <div className="skill-top">
                   <div className="skill-icon">{skill.icon}</div>
-                  <div className="skill-index">0{index + 1}</div>
+                  <span className="mod-tag">{skill.tag}</span>
                 </div>
                 <h3>{skill.name}</h3>
                 <p className="skill-tech">{skill.tech}</p>
                 <p className="skill-accent">{skill.accent}</p>
-              </TiltCard>
+                <span className="skill-meter">
+                  <span className="skill-meter-fill" style={{ "--value": `${skill.level}%` }} />
+                </span>
+              </article>
             ))}
           </div>
         </section>
 
         <section id="portfolio" className="section-padding">
-          <div className="section-header" data-reveal>
-            <span className="section-kicker">03</span>
-            <h2>Featured Work</h2>
+          <div className="section-header" data-reveal data-ghost="04">
+            <span className="stage-tag">STAGE 04</span>
+            <h2>Missions</h2>
           </div>
 
           <div className="portfolio-grid">
-            {PORTFOLIO_ITEMS.map((item, index) => {
+            {PORTFOLIO_ITEMS.map((item) => {
               const isLink = item.url && item.url !== "#";
               const hasPreview = Boolean(item.screenshot);
 
               return (
-                <TiltCard
-                  as={isLink ? "a" : "article"}
+                <a
                   key={item.title}
-                  {...(isLink ? { href: item.url, target: "_blank", rel: "noreferrer noopener" } : {})}
-                  className={`project-card glass-panel ${hasPreview ? "has-preview" : "no-preview"}`}
+                  href={isLink ? item.url : undefined}
+                  target={isLink ? "_blank" : undefined}
+                  rel={isLink ? "noreferrer noopener" : undefined}
+                  className={`project-card panel ${hasPreview ? "has-preview" : "no-preview"} ${isLink ? "" : "static"}`}
                   data-reveal
-                  richPointer={richPointer}
-                  style={{ transitionDelay: `${index * 60}ms` }}
                 >
+                  <span className="mission-tag">Mission {item.fig}</span>
+
                   {hasPreview ? (
                     <div className="project-preview" aria-hidden="true">
                       <img src={item.screenshot} alt="" className="project-preview-image" />
@@ -786,7 +691,7 @@ function App() {
                     <div className="card-top">
                       <div className="card-badge">
                         <FiFolder />
-                        <span>Selected Work</span>
+                        <span>Deployed</span>
                       </div>
                       <div className="card-link">{isLink ? <FiExternalLink /> : <FiCode />}</div>
                     </div>
@@ -803,28 +708,30 @@ function App() {
                     </div>
 
                     <div className="project-footer">
-                      <span>Open project</span>
+                      <span>Launch mission</span>
                       <FiArrowRight />
                     </div>
                   </div>
-                </TiltCard>
+                </a>
               );
             })}
           </div>
         </section>
 
         <section id="experience" className="section-padding">
-          <div className="section-header" data-reveal>
-            <span className="section-kicker">04</span>
-            <h2>Professional Journey</h2>
+          <div className="section-header" data-reveal data-ghost="05">
+            <span className="stage-tag">STAGE 05</span>
+            <h2>
+              <FiBriefcase className="header-icon" /> Service Record
+            </h2>
           </div>
 
-          <div className="timeline">
+          <div className="rev-log">
             {EXPERIENCE.map((item) => (
-              <div className="timeline-item" key={item.role} data-reveal>
-                <div className="timeline-dot" />
-                <div className="timeline-content glass-panel">
-                  <div className="timeline-header">
+              <div className="rev-row panel" key={item.role} data-reveal>
+                <div className="rev-letter">{item.rev}</div>
+                <div className="rev-body">
+                  <div className="rev-header">
                     <h3>{item.role}</h3>
                     <span className="date">{item.date}</span>
                   </div>
@@ -841,19 +748,14 @@ function App() {
         </section>
 
         <section id="reviews" className="section-padding">
-          <div className="section-header" data-reveal>
-            <span className="section-kicker">05</span>
-            <h2>Client Feedback</h2>
+          <div className="section-header" data-reveal data-ghost="06">
+            <span className="stage-tag">STAGE 06</span>
+            <h2>Field Intel</h2>
           </div>
 
           <div className="reviews-grid">
             {REVIEWS.map((review, index) => (
-              <div
-                className="review-card glass-panel"
-                key={index}
-                data-reveal
-                style={{ transitionDelay: `${index * 60}ms` }}
-              >
+              <div className="review-card panel" key={index} data-reveal>
                 <div className="review-header">
                   <div className="review-stars">
                     {[...Array(review.rating)].map((_, idx) => (
@@ -864,7 +766,7 @@ function App() {
                 </div>
 
                 <h3 className="review-title">{review.title}</h3>
-                <p className="review-text">"{review.text}"</p>
+                <p className="review-text">&ldquo;{review.text}&rdquo;</p>
 
                 {review.badges.length > 0 && (
                   <div className="review-badges">
@@ -881,17 +783,21 @@ function App() {
         </section>
 
         <section id="contact" className="section-padding">
-          <div className="section-header" data-reveal>
-            <span className="section-kicker">06</span>
-            <h2>Get In Touch</h2>
+          <div className="section-header" data-reveal data-ghost="07">
+            <span className="stage-tag">STAGE 07</span>
+            <h2>Comms</h2>
           </div>
 
           <div className="contact-container">
-            <div className="contact-info glass-panel" data-reveal>
-              <h3>Let&apos;s build something excellent together.</h3>
+            <div className="contact-info panel" data-reveal>
+              <span className="clearance-stamp">
+                <FiCheckCircle /> Clearance: open for new work
+              </span>
+
+              <h3>Let&apos;s build something reliable together.</h3>
               <p>
-                I&apos;m currently open for new opportunities, freelance projects, and serious collaborations where
-                design quality and technical execution both matter.
+                Open for new opportunities, freelance projects, and collaborations where design
+                quality and technical execution both matter.
               </p>
 
               <div className="info-items">
@@ -910,7 +816,7 @@ function App() {
               </div>
             </div>
 
-            <form className="contact-form glass-panel" data-reveal onSubmit={(e) => e.preventDefault()}>
+            <form className="contact-form panel" data-reveal onSubmit={(e) => e.preventDefault()}>
               <div className="form-group">
                 <label htmlFor="name">Name</label>
                 <input id="name" type="text" placeholder="Your name" required />
@@ -928,7 +834,7 @@ function App() {
 
               <button type="submit" className="cta primary submit-btn">
                 <FiSend />
-                Send Message
+                Transmit
               </button>
             </form>
           </div>
@@ -938,23 +844,13 @@ function App() {
       <footer>
         <div className="footer-content">
           <div className="brand brand-footer">
-            <span className="brand-mark">&lt;</span>
-            <span className="brand-text">France.dev</span>
-            <span className="brand-mark">/&gt;</span>
+            <span className="brand-box">FL</span>
+            <span className="brand-text">France Lee</span>
           </div>
-          <p>Built with React & SCSS. Designed and developed by France Lee.</p>
+          <p>Built with React &amp; SCSS. Designed and developed by France Lee.</p>
           <p className="copyright">© {new Date().getFullYear()} All rights reserved.</p>
         </div>
       </footer>
-
-      <button
-        type="button"
-        className={`back-to-top ${showBackToTop ? "visible" : ""}`}
-        onClick={scrollToTop}
-        aria-label="Back to top"
-      >
-        <FiArrowUp />
-      </button>
     </div>
   );
 }
