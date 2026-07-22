@@ -3,10 +3,8 @@ import {
   FiGithub,
   FiLinkedin,
   FiMail,
-  FiCode,
   FiDatabase,
   FiFolder,
-  FiSend,
   FiPhone,
   FiMapPin,
   FiBriefcase,
@@ -17,10 +15,12 @@ import {
   FiX,
   FiTerminal,
   FiArrowRight,
+  FiArrowDown,
   FiExternalLink,
   FiStar,
   FiRadio,
   FiCheckCircle,
+  FiCode,
 } from "react-icons/fi";
 import { AiOutlineLink } from "react-icons/ai";
 import { FaReact, FaNodeJs, FaWordpress } from "react-icons/fa";
@@ -34,29 +34,30 @@ import stingrayPaymentsShot from "./assets/sites/stingray-city-payments.png";
 import dartOfRositaShot from "./assets/sites/d-art-of-rosita.png";
 import cryptoxShot from "./assets/sites/cryptox-platform.png";
 
-import "./main.scss";
+/* ----------------------------------------------------------------------
+   This build is a "level select" scroll experience: six full-viewport
+   stages, snapped one at a time, each with its own accent wash. Scroll
+   (or use the side rail / arrow keys) to move between stages, the way
+   you'd move between levels in a HUD-driven game menu.
+   ---------------------------------------------------------------------- */
 
-/* Each nav entry is a stage in the profile the visitor moves through,
-   the way a HUD menu numbers the screens in a run. Order carries the
-   sequence, so the number is a real index, not decoration. */
-const NAV_ITEMS = [
-  { id: "home", label: "Intro", sheet: "01" },
-  { id: "about", label: "Dossier", sheet: "02" },
-  { id: "skills", label: "Loadout", sheet: "03" },
-  { id: "portfolio", label: "Missions", sheet: "04" },
-  { id: "experience", label: "Record", sheet: "05" },
-  { id: "reviews", label: "Intel", sheet: "06" },
-  { id: "contact", label: "Comms", sheet: "07" },
+const STAGES = [
+  { id: "home", label: "Home", sheet: "01", accent: "#7dffc4" },
+  { id: "about", label: "About", sheet: "02", accent: "#7dffc4" },
+  { id: "skills", label: "Skills", sheet: "03", accent: "#5cd4ff" },
+  { id: "works", label: "Works", sheet: "04", accent: "#ff5c8a" },
+  { id: "reviews", label: "Reviews", sheet: "05", accent: "#ffd166" },
+  { id: "socials", label: "Socials", sheet: "06", accent: "#7dffc4" },
 ];
 
-/* Attribute readout used in the hero — a compact summary of where the
-   deeper skill cards below go into detail. */
 const ATTRIBUTES = [
   { label: "Frontend", value: 92 },
   { label: "Backend", value: 90 },
   { label: "Cloud / DevOps", value: 85 },
   { label: "AI Integration", value: 80 },
 ];
+
+const HERO_SUBTITLE = "I design and build the systems that keep fast products running.";
 
 const PORTFOLIO_ITEMS = [
   {
@@ -193,41 +194,12 @@ const SKILLS = [
   },
 ];
 
-/* Service record, newest first — the same convention as a rank
-   ladder: the top row holds the current clearance tier. */
-const EXPERIENCE = [
-  {
-    rev: "III",
-    role: "Senior Freelance Engineer",
-    date: "Sep 2024 — Present",
-    company: "Self-Employed · Global Marketplaces",
-    bullets: [
-      "Architecting full-stack web and mobile applications for international clients.",
-      "Developing and deploying custom AI solutions, scraping tools, and containerized APIs.",
-      "Managing end-to-end cloud deployments on AWS and DigitalOcean.",
-    ],
-  },
-  {
-    rev: "II",
-    role: "Full-Stack Developer",
-    date: "Jan 2022 — Aug 2024",
-    company: "Black Spot Studio PH · Full-time",
-    bullets: [
-      "Led backend development for an AI CCTV system with facial and license plate recognition.",
-      "Engineered e-commerce solutions with secure, multi-layered payment gateway integrations.",
-      "Maintained and scaled high-traffic client infrastructure.",
-    ],
-  },
-  {
-    rev: "I",
-    role: "Web Developer",
-    date: "Jul 2020 — Feb 2021",
-    company: "Freelance · Manila",
-    bullets: [
-      "Built responsive, high-converting platforms using custom WordPress/PHP theme development.",
-      "Implemented SEO strategies and technical analytics integrations.",
-    ],
-  },
+/* Condensed service record — folded into the Dossier stage since the
+   brief calls for exactly six stages. Newest first, like a rank ladder. */
+const SERVICE_RECORD = [
+  { rev: "III", role: "Senior Freelance Engineer", date: "Sep 2024 — Present", company: "Self-Employed" },
+  { rev: "II", role: "Full-Stack Developer", date: "Jan 2022 — Aug 2024", company: "Black Spot Studio PH" },
+  { rev: "I", role: "Web Developer", date: "Jul 2020 — Feb 2021", company: "Freelance · Manila" },
 ];
 
 const REVIEWS = [
@@ -276,13 +248,31 @@ const REVIEWS = [
 ];
 
 const SOCIAL_LINKS = [
-  { href: "https://github.com/myoblivion", label: "GitHub", icon: <FiGithub /> },
-  { href: "https://www.upwork.com/freelancers/~018deafe68b8dec6a4", label: "Upwork", icon: <AiOutlineLink /> },
-  { href: "https://www.linkedin.com/in/france-lee-0747781b1/", label: "LinkedIn", icon: <FiLinkedin /> },
+  {
+    href: "https://github.com/myoblivion",
+    label: "GitHub",
+    detail: "Source & side projects",
+    icon: <FiGithub />,
+  },
+  {
+    href: "https://www.upwork.com/freelancers/~018deafe68b8dec6a4",
+    label: "Upwork",
+    detail: "Hire / see verified work history",
+    icon: <AiOutlineLink />,
+  },
+  {
+    href: "https://www.linkedin.com/in/france-lee-0747781b1/",
+    label: "LinkedIn",
+    detail: "Career & network",
+    icon: <FiLinkedin />,
+  },
 ];
 
-/* Rendered twice back-to-back and scrolled exactly 50%, this is the
-   classic seamless-marquee trick — no JS animation loop required. */
+const CONTACT_CHANNELS = [
+  { href: "mailto:francelee594@gmail.com", label: "francelee594@gmail.com", icon: <FiMail /> },
+  { href: "tel:+639154279838", label: "+63 915 427 9838", icon: <FiPhone /> },
+];
+
 const TICKER_ITEMS = [
   "STATUS: ONLINE",
   "FULL-STACK",
@@ -295,26 +285,201 @@ const TICKER_ITEMS = [
   "CAVITE, PH",
 ];
 
+function CountUp({ value, duration = 1200 }) {
+  const [display, setDisplay] = useState(0);
+  const spanRef = useRef(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const el = spanRef.current;
+    if (!el) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !started.current) {
+            started.current = true;
+            const start = performance.now();
+            const tick = (now) => {
+              const progress = Math.min(1, (now - start) / duration);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              setDisplay(Math.round(eased * value));
+              if (progress < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [value, duration]);
+
+  return <span ref={spanRef}>{display}</span>;
+}
+
+function useTiltHandlers(maxTilt = 8) {
+  const onMouseMove = (event) => {
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    const card = event.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const rotateX = ((y / rect.height - 0.5) * -maxTilt).toFixed(2);
+    const rotateY = ((x / rect.width - 0.5) * maxTilt).toFixed(2);
+    card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(4px)`;
+  };
+  const onMouseLeave = (event) => {
+    event.currentTarget.style.transform = "";
+  };
+  return { onMouseMove, onMouseLeave };
+}
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
+  const [booted, setBooted] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ x: -200, y: -200 });
+  const [cursorActive, setCursorActive] = useState(false);
+  const [typedLength, setTypedLength] = useState(0);
+  const [flashLabel, setFlashLabel] = useState(null);
+  const [flashKey, setFlashKey] = useState(0);
 
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
+  const canvasRef = useRef(null);
+  const prevSectionRef = useRef("home");
+  const flashTimeoutRef = useRef(null);
+  const tilt = useTiltHandlers();
+
+  const activeIndex = Math.max(0, STAGES.findIndex((item) => item.id === activeSection));
+  const activeStage = STAGES[activeIndex];
+  const railFillPercent = (activeIndex / (STAGES.length - 1)) * 100;
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const closeMenu = () => setIsMenuOpen(false);
 
-  const handleNavClick = (id) => {
+  const goToStage = (id) => {
     setActiveSection(id);
     closeMenu();
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  /* Single scroll listener, throttled with one rAF, driving two cheap
-     style reads. No layout-thrashing per-section measurement here —
-     that job belongs to the IntersectionObserver below. */
+  const goRelative = (delta) => {
+    const nextIndex = Math.min(STAGES.length - 1, Math.max(0, activeIndex + delta));
+    goToStage(STAGES[nextIndex].id);
+  };
+
+  /* Boot-up sequence */
+  useEffect(() => {
+    const t = setTimeout(() => setBooted(true), 900);
+    return () => clearTimeout(t);
+  }, []);
+
+  /* Typewriter on the hero subtitle */
+  useEffect(() => {
+    if (!booted) return undefined;
+    let i = 0;
+    const interval = setInterval(() => {
+      i += 1;
+      setTypedLength(i);
+      if (i >= HERO_SUBTITLE.length) clearInterval(interval);
+    }, 22);
+    return () => clearInterval(interval);
+  }, [booted]);
+
+  /* "Stage cleared" banner on every section change */
+  useEffect(() => {
+    if (prevSectionRef.current === activeSection) return;
+    prevSectionRef.current = activeSection;
+    const item = STAGES.find((nav) => nav.id === activeSection);
+    if (!item) return;
+
+    setFlashLabel(`${item.sheet} — ${item.label.toUpperCase()}`);
+    setFlashKey((k) => k + 1);
+
+    if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    flashTimeoutRef.current = setTimeout(() => setFlashLabel(null), 1500);
+    return undefined;
+  }, [activeSection]);
+
+  useEffect(() => {
+    return () => {
+      if (flashTimeoutRef.current) clearTimeout(flashTimeoutRef.current);
+    };
+  }, []);
+
+  /* Cursor glow reticle */
+  useEffect(() => {
+    if (!window.matchMedia("(pointer: fine)").matches) return undefined;
+    const onMove = (event) => {
+      setCursorPos({ x: event.clientX, y: event.clientY });
+      setCursorActive(true);
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
+  /* Ambient starfield */
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+    let rafId;
+
+    const PARTICLE_COUNT = 70;
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: Math.random() * 1.4 + 0.4,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: (Math.random() - 0.5) * 0.12,
+      a: Math.random() * 0.5 + 0.15,
+    }));
+
+    const onResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", onResize);
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = activeStage?.accent || "#7dffc4";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      rafId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", onResize);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* Scroll progress bar, throttled with rAF */
   useEffect(() => {
     let rafId = 0;
     let ticking = false;
@@ -325,6 +490,7 @@ function App() {
       const y = window.scrollY;
       setScrolled(y > 24);
       setScrollProgress(max > 0 ? Math.min(100, (y / max) * 100) : 0);
+      setScrollY(y);
       ticking = false;
     };
 
@@ -341,6 +507,27 @@ function App() {
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
+
+  /* Keyboard "level" navigation — arrow / page keys move one stage,
+     matching the one-section-per-scroll feel for keyboard users. */
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (isMenuOpen) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+      if (["ArrowDown", "PageDown"].includes(event.key)) {
+        event.preventDefault();
+        goRelative(1);
+      } else if (["ArrowUp", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        goRelative(-1);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex, isMenuOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -373,11 +560,9 @@ function App() {
     };
   }, [isMenuOpen]);
 
-  /* Active-section tracking via IntersectionObserver instead of a
-     scroll-driven getBoundingClientRect loop — native, GPU-friendly,
-     and doesn't run on every scroll frame. */
+  /* Active-stage tracking via IntersectionObserver */
   useEffect(() => {
-    const sections = NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(Boolean);
+    const sections = STAGES.map((item) => document.getElementById(item.id)).filter(Boolean);
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -385,7 +570,7 @@ function App() {
           if (entry.isIntersecting) setActiveSection(entry.target.id);
         });
       },
-      { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+      { rootMargin: "-30% 0px -30% 0px", threshold: 0 }
     );
 
     sections.forEach((section) => observer.observe(section));
@@ -399,11 +584,12 @@ function App() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
-            revealObserver.unobserve(entry.target);
+          } else {
+            entry.target.classList.remove("is-visible");
           }
         });
       },
-      { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
+      { threshold: 0.16, rootMargin: "0px 0px -8% 0px" }
     );
 
     revealTargets.forEach((el) => revealObserver.observe(el));
@@ -411,7 +597,37 @@ function App() {
   }, []);
 
   return (
-    <div className="app">
+    <div className="app" style={{ "--stage-accent": activeStage?.accent || "#7dffc4" }}>
+      {/* Boot-up HUD overlay */}
+      <div className={`fx-loader ${booted ? "is-booted" : ""}`} aria-hidden="true">
+        <div className="fx-loader-inner">
+          <span className="fx-loader-bracket">[</span>
+          <span className="fx-loader-text">INITIALIZING PROFILE</span>
+          <span className="fx-loader-bracket">]</span>
+          <div className="fx-loader-bar">
+            <span className="fx-loader-bar-fill" />
+          </div>
+        </div>
+      </div>
+
+      <canvas ref={canvasRef} className="fx-starfield" aria-hidden="true" />
+
+      {cursorActive && (
+        <div
+          className="fx-cursor-glow"
+          aria-hidden="true"
+          style={{ transform: `translate(${cursorPos.x}px, ${cursorPos.y}px)` }}
+        />
+      )}
+
+      {flashLabel && (
+        <div className="fx-levelup" key={flashKey} aria-hidden="true">
+          <span className="fx-levelup-line" />
+          <span className="fx-levelup-text">{flashLabel}</span>
+          <span className="fx-levelup-line" />
+        </div>
+      )}
+
       <div className="scroll-progress" style={{ transform: `scaleX(${scrollProgress / 100})` }} />
 
       <div className="grain" aria-hidden="true" />
@@ -421,8 +637,39 @@ function App() {
       <span className="hud-corner hc-bl" aria-hidden="true" />
       <span className="hud-corner hc-br" aria-hidden="true" />
 
+      {/* Side level-select rail */}
+      <div className="fx-side-rail" aria-hidden="true">
+        <span className="fx-rail-line">
+          <span className="fx-rail-line-fill" style={{ height: `${railFillPercent}%` }} />
+        </span>
+        {STAGES.map((item, idx) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            className={`fx-rail-dot ${activeSection === item.id ? "active" : ""} ${
+              idx < activeIndex ? "cleared" : ""
+            }`}
+            onClick={(e) => {
+              e.preventDefault();
+              goToStage(item.id);
+            }}
+          >
+            <span className="fx-rail-num">{item.sheet}</span>
+            <span className="fx-rail-tip">{item.label}</span>
+          </a>
+        ))}
+      </div>
+
       <nav className={`nav-shell ${scrolled ? "scrolled" : ""}`}>
-        <a className="brand" href="#home" onClick={() => handleNavClick("home")} aria-label="Go to home">
+        <a
+          className="brand"
+          href="#home"
+          onClick={(e) => {
+            e.preventDefault();
+            goToStage("home");
+          }}
+          aria-label="Go to home"
+        >
           <span className="brand-box">FL</span>
           <span className="brand-text">
             France Lee
@@ -445,11 +692,14 @@ function App() {
         </button>
 
         <ul ref={menuRef} id="site-navigation" className={`menu-items ${isMenuOpen ? "active" : ""}`}>
-          {NAV_ITEMS.map((item) => (
+          {STAGES.map((item) => (
             <li key={item.id}>
               <a
                 href={`#${item.id}`}
-                onClick={() => handleNavClick(item.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToStage(item.id);
+                }}
                 className={activeSection === item.id ? "active" : ""}
               >
                 <span className="tab-num">{item.sheet}</span>
@@ -463,20 +713,27 @@ function App() {
       <div className={`menu-backdrop ${isMenuOpen ? "active" : ""}`} onClick={closeMenu} />
 
       <main>
-        <section id="home" className="hero hud-grid">
-          <span className="hero-spine" aria-hidden="true">
-            FULL-STACK ENGINEER — CLOUD — AI —
-          </span>
-
-          <div className="hero-inner">
-            <div className="hero-copy" data-reveal>
+        {/* ================= STAGE 01 — HELLO ================= */}
+        <section id="home" className="stage stage-hero" data-stage-accent={STAGES[0].accent}>
+          <div className="stage-inner hero-inner">
+            <div className="hero-copy fx-anim fx-anim-up" data-reveal>
               <div className="eyebrow">
                 <FiTerminal />
                 Operator Profile <span className="status-dot" /> Available for deployment
               </div>
 
-              <h1 className="hero-title">FRANCE LEE</h1>
-              <h2>I design and build the systems that keep fast products running.</h2>
+              <p className="hero-wave">
+                <span className="wave-emoji">👋</span> Hello there.
+              </p>
+
+              <h1 className="hero-title fx-glitch" data-text="FRANCE LEE">
+                FRANCE LEE
+              </h1>
+
+              <h2 className="fx-typewriter" aria-label={HERO_SUBTITLE}>
+                <span aria-hidden="true">{HERO_SUBTITLE.slice(0, typedLength)}</span>
+                <span className="fx-caret" aria-hidden="true" />
+              </h2>
 
               <p className="hero-description">
                 Full-stack engineer with 5+ years shipping web and mobile platforms, cloud
@@ -485,13 +742,27 @@ function App() {
               </p>
 
               <div className="hero-actions">
-                <a href="#portfolio" className="cta primary" onClick={() => handleNavClick("portfolio")}>
-                  View missions
+                <a
+                  href="#works"
+                  className="cta primary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToStage("works");
+                  }}
+                >
+                  View my work
                   <FiArrowRight />
                 </a>
-                <a href="#contact" className="cta secondary" onClick={() => handleNavClick("contact")}>
+                <a
+                  href="#socials"
+                  className="cta secondary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToStage("socials");
+                  }}
+                >
                   <FiRadio />
-                  Open comms
+                  Contact
                 </a>
               </div>
 
@@ -502,18 +773,20 @@ function App() {
                     <span className="stat-bar-track">
                       <span className="stat-bar-fill" style={{ "--value": `${attr.value}%` }} />
                     </span>
-                    <span className="stat-bar-value">{attr.value}</span>
+                    <span className="stat-bar-value">
+                      <CountUp value={attr.value} />
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="hero-visual" data-reveal>
-              <div className="pinned-photo">
+            <div className="hero-visual fx-anim fx-anim-right" data-reveal>
+              <div className="pinned-photo" style={{ transform: `translateY(${scrollY * 0.06}px)` }}>
                 <img src={profileImage} alt="France Lee" className="portrait-image" />
                 <span className="rank-ring" aria-hidden="true">
                   <span className="rank-ring-track" />
-                  <span className="rank-label">LVL 05</span>
+                  <span className="rank-label">5+ YRS</span>
                 </span>
               </div>
               <div className="visual-tags">
@@ -543,314 +816,676 @@ function App() {
               <span className="ss-value">Open to work</span>
             </div>
             <div className="ss-field ss-stage">
-              <span className="ss-label">Stage</span>
-              <span className="ss-value">01 / 07</span>
+              <span className="ss-label">Section</span>
+              <span className="ss-value">{String(activeIndex + 1).padStart(2, "0")} / 06</span>
             </div>
           </div>
+
+          <button className="scroll-hint" onClick={() => goRelative(1)} aria-label="Scroll to next stage">
+            <span>Scroll</span>
+            <FiArrowDown />
+          </button>
         </section>
 
-        <div className="ticker" aria-hidden="true">
-          <div className="ticker-track">
-            {[0, 1].map((rep) => (
-              <div className="ticker-set" key={rep}>
-                {TICKER_ITEMS.map((label) => (
-                  <span className="ticker-item" key={`${rep}-${label}`}>
-                    {label}
-                    <span className="dot">•</span>
-                  </span>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <section id="about" className="section-padding">
-          <div className="section-header" data-reveal data-ghost="02">
-            <span className="stage-tag">STAGE 02</span>
-            <h2>Dossier</h2>
-          </div>
-
-          <div className="about-grid">
-            <div className="about-copy panel" data-reveal>
-              <p>
-                I&apos;m a senior full-stack developer with over 5 years of experience engineering
-                complex web applications, mobile platforms, and automated software solutions.
-              </p>
-              <p>
-                My work spans modern JavaScript frameworks, PHP/Laravel ecosystems, and wiring AI
-                tools like Ollama and Python scripts into production environments — whether that&apos;s
-                a polished Gutenberg theme or a high-availability Telegram bot running on
-                DigitalOcean. Clean, scalable, maintainable code is the standard I hold every build to.
-              </p>
-
-              <div className="social-links">
-                {SOCIAL_LINKS.map((link) => (
-                  <a key={link.label} href={link.href} target="_blank" rel="noreferrer noopener" className="social-button">
-                    {link.icon}
-                    <span>{link.label}</span>
-                  </a>
-                ))}
-              </div>
+        {/* ================= STAGE 02 — DOSSIER (ABOUT) ================= */}
+        <section id="about" className="stage stage-padded" data-stage-accent={STAGES[1].accent}>
+          <div className="stage-inner">
+            <div className="section-header fx-anim fx-anim-stage" data-reveal data-ghost="02">
+              <span className="stage-tag">STAGE 02</span>
+              <h2>About me</h2>
             </div>
 
-            <div className="about-sidebar" data-reveal>
-              <div className="file-card panel">
-                <div className="file-title">
-                  <FiLayout /> Operative File
-                </div>
-                <ul className="file-list">
-                  <li>
-                    <span className="label">Location</span>
-                    <span>Cavite, Philippines</span>
-                  </li>
-                  <li>
-                    <span className="label">Status</span>
-                    <span>Open to Opportunities</span>
-                  </li>
-                  <li>
-                    <span className="label">Email</span>
-                    <span>francelee594@gmail.com</span>
-                  </li>
-                  <li>
-                    <span className="label">Focus</span>
-                    <span>Full-Stack / Cloud / AI</span>
-                  </li>
-                </ul>
-              </div>
+            <div className="about-grid">
+              <div className="about-copy panel fx-anim fx-anim-left" data-reveal>
+                <p>
+                  I&apos;m a senior full-stack developer with over 5 years of experience engineering
+                  complex web applications, mobile platforms, and automated software solutions.
+                </p>
+                <p>
+                  My work spans modern JavaScript frameworks, PHP/Laravel ecosystems, and wiring AI
+                  tools like Ollama and Python scripts into production environments — whether
+                  that&apos;s a polished Gutenberg theme or a high-availability Telegram bot running on
+                  DigitalOcean. Clean, scalable, maintainable code is the standard I hold every build to.
+                </p>
 
-              <div className="mini-grid">
-                <div className="mini-card panel">
-                  <FiCode />
-                  <strong>Developer-first</strong>
-                  <span>Readable, scalable code</span>
-                </div>
-                <div className="mini-card panel">
-                  <FiBriefcase />
-                  <strong>Delivery-minded</strong>
-                  <span>Ships on schedule</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="skills" className="section-padding">
-          <div className="section-header" data-reveal data-ghost="03">
-            <span className="stage-tag">STAGE 03</span>
-            <h2>Loadout</h2>
-          </div>
-
-          <div className="skills-grid">
-            {SKILLS.map((skill) => (
-              <article className="skill-card panel" key={skill.name} data-reveal>
-                <div className="skill-top">
-                  <div className="skill-icon">{skill.icon}</div>
-                  <span className="mod-tag">{skill.tag}</span>
-                </div>
-                <h3>{skill.name}</h3>
-                <p className="skill-tech">{skill.tech}</p>
-                <p className="skill-accent">{skill.accent}</p>
-                <span className="skill-meter">
-                  <span className="skill-meter-fill" style={{ "--value": `${skill.level}%` }} />
-                </span>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="portfolio" className="section-padding">
-          <div className="section-header" data-reveal data-ghost="04">
-            <span className="stage-tag">STAGE 04</span>
-            <h2>Missions</h2>
-          </div>
-
-          <div className="portfolio-grid">
-            {PORTFOLIO_ITEMS.map((item) => {
-              const isLink = item.url && item.url !== "#";
-              const hasPreview = Boolean(item.screenshot);
-
-              return (
-                <a
-                  key={item.title}
-                  href={isLink ? item.url : undefined}
-                  target={isLink ? "_blank" : undefined}
-                  rel={isLink ? "noreferrer noopener" : undefined}
-                  className={`project-card panel ${hasPreview ? "has-preview" : "no-preview"} ${isLink ? "" : "static"}`}
-                  data-reveal
-                >
-                  <span className="mission-tag">Mission {item.fig}</span>
-
-                  {hasPreview ? (
-                    <div className="project-preview" aria-hidden="true">
-                      <img src={item.screenshot} alt="" className="project-preview-image" />
-                      <div className="project-preview-overlay" />
-                    </div>
-                  ) : null}
-
-                  <div className="project-content">
-                    <div className="card-top">
-                      <div className="card-badge">
-                        <FiFolder />
-                        <span>Deployed</span>
+                <div className="rev-log rev-log-compact">
+                  {SERVICE_RECORD.map((item) => (
+                    <div className="rev-row" key={item.role}>
+                      <div className="rev-letter">{item.rev}</div>
+                      <div className="rev-body">
+                        <div className="rev-header">
+                          <h4>{item.role}</h4>
+                          <span className="date">{item.date}</span>
+                        </div>
+                        <span className="company">{item.company}</span>
                       </div>
-                      <div className="card-link">{isLink ? <FiExternalLink /> : <FiCode />}</div>
                     </div>
+                  ))}
+                </div>
+              </div>
 
-                    <h3>{item.title}</h3>
-                    <p>{item.description}</p>
-
-                    <div className="tech-stack">
-                      {item.tech.map((tech) => (
-                        <span key={tech} className="tech-pill">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="project-footer">
-                      <span>Launch mission</span>
-                      <FiArrowRight />
-                    </div>
+              <div className="about-sidebar fx-anim fx-anim-right" data-reveal>
+                <div className="file-card panel" {...tilt}>
+                  <div className="file-title">
+                    <FiLayout /> Operative File
                   </div>
-                </a>
-              );
-            })}
-          </div>
-        </section>
-
-        <section id="experience" className="section-padding">
-          <div className="section-header" data-reveal data-ghost="05">
-            <span className="stage-tag">STAGE 05</span>
-            <h2>
-              <FiBriefcase className="header-icon" /> Service Record
-            </h2>
-          </div>
-
-          <div className="rev-log">
-            {EXPERIENCE.map((item) => (
-              <div className="rev-row panel" key={item.role} data-reveal>
-                <div className="rev-letter">{item.rev}</div>
-                <div className="rev-body">
-                  <div className="rev-header">
-                    <h3>{item.role}</h3>
-                    <span className="date">{item.date}</span>
-                  </div>
-                  <span className="company">{item.company}</span>
-                  <ul>
-                    {item.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
+                  <ul className="file-list">
+                    <li>
+                      <span className="label">Location</span>
+                      <span>Cavite, Philippines</span>
+                    </li>
+                    <li>
+                      <span className="label">Status</span>
+                      <span>Open to Opportunities</span>
+                    </li>
+                    <li>
+                      <span className="label">Email</span>
+                      <span>francelee594@gmail.com</span>
+                    </li>
+                    <li>
+                      <span className="label">Focus</span>
+                      <span>Full-Stack / Cloud / AI</span>
+                    </li>
                   </ul>
                 </div>
+
+                <div className="mini-grid">
+                  <div className="mini-card panel" {...tilt}>
+                    <FiCode />
+                    <strong>Developer-first</strong>
+                    <span>Readable, scalable code</span>
+                  </div>
+                  <div className="mini-card panel" {...tilt}>
+                    <FiBriefcase />
+                    <strong>Delivery-minded</strong>
+                    <span>Ships on schedule</span>
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
         </section>
 
-        <section id="reviews" className="section-padding">
-          <div className="section-header" data-reveal data-ghost="06">
-            <span className="stage-tag">STAGE 06</span>
-            <h2>Field Intel</h2>
-          </div>
+        {/* ================= STAGE 03 — LOADOUT (SKILLS) ================= */}
+        <section id="skills" className="stage stage-padded" data-stage-accent={STAGES[2].accent}>
+          <div className="stage-inner">
+            <div className="section-header fx-anim fx-anim-stage" data-reveal data-ghost="03">
+              <span className="stage-tag">STAGE 03</span>
+              <h2>Skills</h2>
+            </div>
 
-          <div className="reviews-grid">
-            {REVIEWS.map((review, index) => (
-              <div className="review-card panel" key={index} data-reveal>
-                <div className="review-header">
-                  <div className="review-stars">
-                    {[...Array(review.rating)].map((_, idx) => (
-                      <FiStar key={idx} className="star-icon" fill="currentColor" />
-                    ))}
-                  </div>
-                  <span className="review-date">{review.date}</span>
-                </div>
-
-                <h3 className="review-title">{review.title}</h3>
-                <p className="review-text">&ldquo;{review.text}&rdquo;</p>
-
-                {review.badges.length > 0 && (
-                  <div className="review-badges">
-                    {review.badges.map((badge) => (
-                      <span key={badge} className="review-badge">
-                        {badge}
+            <div className="ticker" aria-hidden="true">
+              <div className="ticker-track">
+                {[0, 1].map((rep) => (
+                  <div className="ticker-set" key={rep}>
+                    {TICKER_ITEMS.map((label) => (
+                      <span className="ticker-item" key={`${rep}-${label}`}>
+                        {label}
+                        <span className="dot">•</span>
                       </span>
                     ))}
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="contact" className="section-padding">
-          <div className="section-header" data-reveal data-ghost="07">
-            <span className="stage-tag">STAGE 07</span>
-            <h2>Comms</h2>
-          </div>
-
-          <div className="contact-container">
-            <div className="contact-info panel" data-reveal>
-              <span className="clearance-stamp">
-                <FiCheckCircle /> Clearance: open for new work
-              </span>
-
-              <h3>Let&apos;s build something reliable together.</h3>
-              <p>
-                Open for new opportunities, freelance projects, and collaborations where design
-                quality and technical execution both matter.
-              </p>
-
-              <div className="info-items">
-                <a href="mailto:francelee594@gmail.com" className="info-item">
-                  <FiMail />
-                  <span>francelee594@gmail.com</span>
-                </a>
-                <a href="tel:+639154279838" className="info-item">
-                  <FiPhone />
-                  <span>+63 915 427 9838</span>
-                </a>
-                <div className="info-item">
-                  <FiMapPin />
-                  <span>Cavite, Philippines</span>
-                </div>
+                ))}
               </div>
             </div>
 
-            <form className="contact-form panel" data-reveal onSubmit={(e) => e.preventDefault()}>
-              <div className="form-group">
-                <label htmlFor="name">Name</label>
-                <input id="name" type="text" placeholder="Your name" required />
-              </div>
+            <div className="skills-grid">
+              {SKILLS.map((skill, index) => (
+                <article
+                  className="skill-card panel fx-anim fx-anim-scale"
+                  key={skill.name}
+                  data-reveal
+                  style={{ "--stagger": index }}
+                  {...tilt}
+                >
+                  <div className="skill-top">
+                    <div className="skill-icon">{skill.icon}</div>
+                    <span className="mod-tag">{skill.tag}</span>
+                  </div>
+                  <h3>{skill.name}</h3>
+                  <p className="skill-tech">{skill.tech}</p>
+                  <p className="skill-accent">{skill.accent}</p>
+                  <span className="skill-meter">
+                    <span className="skill-meter-fill" style={{ "--value": `${skill.level}%` }} />
+                  </span>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
 
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input id="email" type="email" placeholder="Your email" required />
-              </div>
+        {/* ================= STAGE 04 — MISSIONS (WORKS) ================= */}
+        <section id="works" className="stage stage-padded" data-stage-accent={STAGES[3].accent}>
+          <div className="stage-inner">
+            <div className="section-header fx-anim fx-anim-stage" data-reveal data-ghost="04">
+              <span className="stage-tag">STAGE 04</span>
+              <h2>Works</h2>
+            </div>
 
-              <div className="form-group">
-                <label htmlFor="message">Message</label>
-                <textarea id="message" placeholder="Tell me about your project" rows="6" required />
-              </div>
+            <div className="portfolio-grid">
+              {PORTFOLIO_ITEMS.map((item, index) => {
+                const isLink = item.url && item.url !== "#";
+                const hasPreview = Boolean(item.screenshot);
 
-              <button type="submit" className="cta primary submit-btn">
-                <FiSend />
-                Transmit
-              </button>
-            </form>
+                return (
+                  <a
+                    key={item.title}
+                    href={isLink ? item.url : undefined}
+                    target={isLink ? "_blank" : undefined}
+                    rel={isLink ? "noreferrer noopener" : undefined}
+                    className={`project-card panel fx-anim fx-anim-flip ${
+                      hasPreview ? "has-preview" : "no-preview"
+                    } ${isLink ? "" : "static"}`}
+                    data-reveal
+                    style={{ "--stagger": index % 3 }}
+                    {...tilt}
+                  >
+                    <span className="mission-tag">Project {item.fig}</span>
+
+                    {hasPreview ? (
+                      <div className="project-preview" aria-hidden="true">
+                        <img src={item.screenshot} alt="" className="project-preview-image" />
+                        <div className="project-preview-overlay" />
+                      </div>
+                    ) : null}
+
+                    <div className="project-content">
+                      <div className="card-top">
+                        <div className="card-badge">
+                          <FiFolder />
+                          <span>Deployed</span>
+                        </div>
+                        <div className="card-link">{isLink ? <FiExternalLink /> : <FiCode />}</div>
+                      </div>
+
+                      <h3>{item.title}</h3>
+                      <p>{item.description}</p>
+
+                      <div className="tech-stack">
+                        {item.tech.map((tech) => (
+                          <span key={tech} className="tech-pill">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="project-footer">
+                        <span>Visit site</span>
+                        <FiArrowRight />
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= STAGE 05 — INTEL (REVIEWS) ================= */}
+        <section id="reviews" className="stage stage-padded" data-stage-accent={STAGES[4].accent}>
+          <div className="stage-inner">
+            <div className="section-header fx-anim fx-anim-stage" data-reveal data-ghost="05">
+              <span className="stage-tag">STAGE 05</span>
+              <h2>Reviews</h2>
+            </div>
+
+            <div className="reviews-grid">
+              {REVIEWS.map((review, index) => (
+                <div
+                  className="review-card panel fx-anim fx-anim-up"
+                  key={review.title + index}
+                  data-reveal
+                  style={{ "--stagger": index % 3 }}
+                  {...tilt}
+                >
+                  <div className="review-header">
+                    <div className="review-stars">
+                      {[...Array(review.rating)].map((_, idx) => (
+                        <FiStar key={idx} className="star-icon" fill="currentColor" />
+                      ))}
+                    </div>
+                    <span className="review-date">{review.date}</span>
+                  </div>
+
+                  <h3 className="review-title">{review.title}</h3>
+                  <p className="review-text">&ldquo;{review.text}&rdquo;</p>
+
+                  {review.badges.length > 0 && (
+                    <div className="review-badges">
+                      {review.badges.map((badge) => (
+                        <span key={badge} className="review-badge">
+                          {badge}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= STAGE 06 — COMMS (SOCIALS) ================= */}
+        <section id="socials" className="stage stage-padded stage-socials" data-stage-accent={STAGES[5].accent}>
+          <div className="stage-inner">
+            <div className="section-header fx-anim fx-anim-stage" data-reveal data-ghost="06">
+              <span className="stage-tag">STAGE 06</span>
+              <h2>Socials</h2>
+            </div>
+
+            <div className="socials-intro fx-anim fx-anim-up" data-reveal>
+              <span className="clearance-stamp">
+                <FiCheckCircle /> Available for new work
+              </span>
+              <h3>Let&apos;s build something reliable together.</h3>
+              <p>
+                Open for new opportunities, freelance projects, and collaborations where design
+                quality and technical execution both matter. Pick a channel below.
+              </p>
+            </div>
+
+            <div className="socials-grid">
+              {SOCIAL_LINKS.map((link, index) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="social-card panel fx-anim fx-anim-scale"
+                  data-reveal
+                  style={{ "--stagger": index }}
+                  {...tilt}
+                >
+                  <span className="social-card-icon">{link.icon}</span>
+                  <span className="social-card-label">{link.label}</span>
+                  <span className="social-card-detail">{link.detail}</span>
+                  <span className="social-card-go">
+                    Connect <FiArrowRight />
+                  </span>
+                </a>
+              ))}
+            </div>
+
+            <div className="contact-channels fx-anim fx-anim-up" data-reveal>
+              {CONTACT_CHANNELS.map((c) => (
+                <a key={c.label} href={c.href} className="contact-channel">
+                  {c.icon}
+                  <span>{c.label}</span>
+                </a>
+              ))}
+              <div className="contact-channel is-static">
+                <FiMapPin />
+                <span>Cavite, Philippines</span>
+              </div>
+            </div>
+
+            <footer className="footer-inline">
+              <div className="brand brand-footer">
+                <span className="brand-box">FL</span>
+                <span className="brand-text">France Lee</span>
+              </div>
+              <p className="copyright">© {new Date().getFullYear()} France Lee. All rights reserved.</p>
+            </footer>
           </div>
         </section>
       </main>
 
-      <footer>
-        <div className="footer-content">
-          <div className="brand brand-footer">
-            <span className="brand-box">FL</span>
-            <span className="brand-text">France Lee</span>
-          </div>
-          <p>Built with React &amp; SCSS. Designed and developed by France Lee.</p>
-          <p className="copyright">© {new Date().getFullYear()} All rights reserved.</p>
-        </div>
-      </footer>
+      <style>{`
+        :root {
+          --bg: #05070a;
+          --bg-soft: #0a0e14;
+          --mint: #7dffc4;
+          --blue: #5cd4ff;
+          --pink: #ff5c8a;
+          --amber: #ffd166;
+          --ink: #e8f6ee;
+          --ink-dim: rgba(232, 246, 238, 0.62);
+          --border: rgba(125, 255, 196, 0.22);
+        }
+
+        * { box-sizing: border-box; }
+
+        html {
+          background: var(--bg);
+        }
+
+        body {
+          margin: 0;
+          background: var(--bg);
+          color: var(--ink);
+          font-family: "Space Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+          -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4 { margin: 0; font-family: "Space Grotesk", "Inter", sans-serif; letter-spacing: -0.01em; }
+        p { margin: 0; line-height: 1.6; color: var(--ink-dim); }
+        a { color: inherit; text-decoration: none; }
+        ul { margin: 0; padding: 0; list-style: none; }
+        button { font-family: inherit; cursor: pointer; }
+
+        .app { position: relative; background: var(--bg); overflow-x: hidden; }
+
+        .panel {
+          background: linear-gradient(160deg, rgba(255,255,255,0.045), rgba(255,255,255,0.01));
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          padding: 26px;
+          backdrop-filter: blur(6px);
+        }
+
+        .stage-tag {
+          font-size: 11px;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: var(--stage-accent, var(--mint));
+        }
+        .section-header { display: flex; flex-direction: column; gap: 6px; margin-bottom: 34px; }
+        .section-header h2 { font-size: clamp(28px, 4vw, 44px); }
+
+        /* ---- Snap stages ---- */
+        .stage {
+          position: relative;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+        }
+
+        .stage-padded { padding: 120px 6vw 60px; align-items: flex-start; }
+        .stage-inner { width: 100%; max-width: 1200px; margin: 0 auto; }
+
+        /* Per-stage tint wash, transitions as you scroll between them */
+        .stage::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+          background: radial-gradient(circle at 15% 15%, color-mix(in srgb, var(--stage-accent, #7dffc4) 10%, transparent), transparent 55%);
+          pointer-events: none;
+        }
+
+        /* ---- HUD chrome (loader / starfield / cursor / flash / grain) ---- */
+        .fx-starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: screen; }
+
+        .fx-loader {
+          position: fixed; inset: 0; z-index: 9999;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--bg);
+          transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .fx-loader.is-booted { opacity: 0; visibility: hidden; pointer-events: none; }
+        .fx-loader-inner { display: flex; flex-direction: column; align-items: center; gap: 14px; letter-spacing: 0.35em; color: var(--mint); }
+        .fx-loader-text { font-size: 13px; animation: fx-flicker 1.2s infinite; }
+        .fx-loader-bracket { font-size: 18px; opacity: 0.6; }
+        .fx-loader-bar { width: 180px; height: 3px; background: rgba(125,255,196,0.15); overflow: hidden; }
+        .fx-loader-bar-fill { display: block; height: 100%; width: 40%; background: var(--mint); animation: fx-loader-scan 0.9s ease-in-out infinite; }
+        @keyframes fx-loader-scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+        @keyframes fx-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .fx-cursor-glow {
+          position: fixed; top: 0; left: 0; width: 260px; height: 260px;
+          margin-left: -130px; margin-top: -130px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(125,255,196,0.08) 0%, rgba(125,255,196,0) 70%);
+          pointer-events: none; z-index: 5; transition: transform 0.08s linear; will-change: transform;
+        }
+
+        .fx-levelup {
+          position: fixed; top: 90px; left: 50%; transform: translate(-50%, -12px); z-index: 60;
+          display: flex; align-items: center; gap: 14px; pointer-events: none;
+          opacity: 0; animation: fx-levelup-pop 1.5s ease forwards;
+        }
+        .fx-levelup-line { width: 40px; height: 1px; background: rgba(125,255,196,0.6); }
+        .fx-levelup-text { font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--mint); white-space: nowrap; text-shadow: 0 0 12px rgba(125,255,196,0.5); }
+        @keyframes fx-levelup-pop {
+          0% { opacity: 0; transform: translate(-50%, -12px); }
+          12% { opacity: 1; transform: translate(-50%, 0); }
+          85% { opacity: 1; transform: translate(-50%, 0); }
+          100% { opacity: 0; transform: translate(-50%, -8px); }
+        }
+
+        .scroll-progress { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--mint); transform-origin: left; z-index: 70; }
+        .grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.03; background-image: radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px); background-size: 3px 3px; }
+
+        .hud-corner { position: fixed; width: 26px; height: 26px; border: 1px solid rgba(125,255,196,0.35); z-index: 45; pointer-events: none; }
+        .hc-tl { top: 14px; left: 14px; border-right: none; border-bottom: none; }
+        .hc-tr { top: 14px; right: 14px; border-left: none; border-bottom: none; }
+        .hc-bl { bottom: 14px; left: 14px; border-right: none; border-top: none; }
+        .hc-br { bottom: 14px; right: 14px; border-left: none; border-top: none; }
+
+        /* ---- Side rail ---- */
+        .fx-side-rail { position: fixed; right: 26px; top: 50%; transform: translateY(-50%); z-index: 40; display: flex; flex-direction: column; align-items: center; gap: 26px; }
+        @media (max-width: 860px) { .fx-side-rail { display: none; } }
+        .fx-rail-line { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: rgba(125,255,196,0.15); }
+        .fx-rail-line-fill { position: absolute; top: 0; left: 0; width: 100%; background: linear-gradient(180deg, var(--mint), rgba(125,255,196,0.4)); transition: height 0.4s ease; }
+        .fx-rail-dot { position: relative; z-index: 1; width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(125,255,196,0.4); background: var(--bg); display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; }
+        .fx-rail-dot.cleared { background: rgba(125,255,196,0.35); border-color: rgba(125,255,196,0.6); }
+        .fx-rail-dot.active { background: var(--mint); box-shadow: 0 0 10px 2px rgba(125,255,196,0.6); transform: scale(1.3); }
+        .fx-rail-tip {
+          position: absolute; right: 20px; top: 50%; transform: translateY(-50%); white-space: nowrap;
+          font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint);
+          background: rgba(5,7,10,0.85); padding: 4px 8px; border: 1px solid rgba(125,255,196,0.25);
+          opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+        }
+        .fx-rail-dot:hover .fx-rail-tip { opacity: 1; }
+
+        /* ---- Nav ---- */
+        .nav-shell {
+          position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 20px 6vw; transition: background 0.3s ease, padding 0.3s ease, border-color 0.3s ease;
+          border-bottom: 1px solid transparent;
+        }
+        .nav-shell.scrolled { background: rgba(5,7,10,0.82); backdrop-filter: blur(10px); padding: 14px 6vw; border-color: var(--border); }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-box {
+          display: flex; align-items: center; justify-content: center; width: 38px; height: 38px;
+          border: 1px solid var(--mint); border-radius: 10px; font-weight: 700; color: var(--mint);
+        }
+        .brand-text { display: flex; flex-direction: column; font-weight: 600; }
+        .brand-status { font-size: 11px; font-weight: 400; color: var(--ink-dim); display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 6px var(--mint); }
+
+        .hamburger { display: none; background: none; border: 1px solid var(--border); color: var(--ink); width: 40px; height: 40px; border-radius: 10px; align-items: center; justify-content: center; font-size: 18px; }
+        .menu-items { display: flex; align-items: center; gap: 28px; }
+        .menu-items a { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-dim); transition: color 0.2s ease; }
+        .menu-items a.active, .menu-items a:hover { color: var(--mint); }
+        .tab-num { font-size: 10px; color: rgba(125,255,196,0.5); }
+        .menu-backdrop { display: none; }
+
+        @media (max-width: 860px) {
+          .hamburger { display: flex; }
+          .menu-items {
+            position: fixed; top: 0; right: 0; height: 100vh; width: min(78vw, 320px);
+            background: rgba(5,7,10,0.97); flex-direction: column; align-items: flex-start;
+            justify-content: center; gap: 24px; padding: 40px; transform: translateX(100%);
+            transition: transform 0.3s ease; z-index: 55; border-left: 1px solid var(--border);
+          }
+          .menu-items.active { transform: translateX(0); }
+          .menu-backdrop.active { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 52; }
+        }
+
+        /* ---- Hero ---- */
+        .stage-hero { flex-direction: column; justify-content: center; padding: 100px 6vw 40px; gap: 0; }
+        .hero-inner { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center; }
+        @media (max-width: 900px) { .hero-inner { grid-template-columns: 1fr; gap: 40px; } }
+
+        .eyebrow { display: flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mint); margin-bottom: 18px; }
+        .hero-wave { font-size: 18px; color: var(--ink-dim); margin-bottom: 6px; }
+        .wave-emoji { display: inline-block; animation: fx-wave 2.4s ease-in-out infinite; transform-origin: 70% 70%; }
+        @keyframes fx-wave { 0%, 60%, 100% { transform: rotate(0deg); } 10% { transform: rotate(14deg); } 20% { transform: rotate(-8deg); } 30% { transform: rotate(14deg); } 40% { transform: rotate(-4deg); } }
+
+        .hero-title { font-size: clamp(48px, 9vw, 108px); font-weight: 800; line-height: 0.95; margin-bottom: 14px; }
+        .fx-glitch { position: relative; }
+        .fx-glitch::before, .fx-glitch::after { content: attr(data-text); position: absolute; left: 0; top: 0; width: 100%; overflow: hidden; clip-path: inset(0 0 0 0); }
+        .fx-glitch::before { color: var(--pink); animation: fx-glitch-1 3.2s infinite linear; z-index: -1; }
+        .fx-glitch::after { color: var(--blue); animation: fx-glitch-2 2.6s infinite linear; z-index: -1; }
+        @keyframes fx-glitch-1 { 0%, 92%, 100% { clip-path: inset(0 0 0 0); transform: translate(0,0); opacity: 0; } 93% { clip-path: inset(10% 0 60% 0); transform: translate(-3px,1px); opacity: 0.7; } 95% { clip-path: inset(60% 0 5% 0); transform: translate(3px,-1px); opacity: 0.7; } 97% { clip-path: inset(30% 0 40% 0); transform: translate(-2px,0); opacity: 0.5; } }
+        @keyframes fx-glitch-2 { 0%, 90%, 100% { clip-path: inset(0 0 0 0); transform: translate(0,0); opacity: 0; } 91% { clip-path: inset(70% 0 5% 0); transform: translate(2px,1px); opacity: 0.6; } 94% { clip-path: inset(5% 0 70% 0); transform: translate(-2px,-1px); opacity: 0.6; } 98% { clip-path: inset(40% 0 30% 0); transform: translate(2px,0); opacity: 0.4; } }
+
+        .fx-typewriter { font-size: clamp(16px, 2vw, 20px); font-weight: 500; color: var(--ink); margin-bottom: 18px; min-height: 1.6em; }
+        .fx-caret { display: inline-block; width: 2px; height: 1em; margin-left: 3px; vertical-align: -0.15em; background: currentColor; animation: fx-caret-blink 0.9s steps(2) infinite; }
+        @keyframes fx-caret-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+        .hero-description { max-width: 480px; margin-bottom: 30px; }
+        .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 40px; }
+        .cta { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; border-radius: 10px; font-size: 14px; font-weight: 600; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .cta.primary { background: var(--mint); color: #04120b; box-shadow: 0 0 0 rgba(125,255,196,0); }
+        .cta.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(125,255,196,0.25); }
+        .cta.secondary { border: 1px solid var(--border); color: var(--ink); }
+        .cta.secondary:hover { border-color: var(--mint); color: var(--mint); }
+
+        .stat-bars { display: flex; flex-direction: column; gap: 12px; max-width: 380px; }
+        .stat-bar { display: grid; grid-template-columns: 110px 1fr 34px; align-items: center; gap: 12px; font-size: 12px; }
+        .stat-bar-label { color: var(--ink-dim); letter-spacing: 0.05em; }
+        .stat-bar-track { height: 6px; background: rgba(125,255,196,0.12); border-radius: 4px; overflow: hidden; }
+        .stat-bar-fill { display: block; height: 100%; width: var(--value); background: linear-gradient(90deg, var(--blue), var(--mint)); border-radius: 4px; transition: width 1.2s cubic-bezier(0.16,0.84,0.44,1); }
+        .stat-bar-value { text-align: right; color: var(--mint); font-weight: 600; }
+
+        .hero-visual { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .pinned-photo { position: relative; width: min(320px, 80%); }
+        .portrait-image { width: 100%; border-radius: 20px; border: 1px solid var(--border); display: block; }
+        .rank-ring { position: absolute; bottom: -14px; right: -14px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+        .rank-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--mint); background: var(--bg); }
+        .rank-label { position: relative; font-size: 10px; font-weight: 700; color: var(--mint); }
+        .visual-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .tech-pill { font-size: 11px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); color: var(--ink-dim); }
+
+        .status-strip { display: flex; flex-wrap: wrap; gap: 26px; margin-top: 50px; padding-top: 22px; border-top: 1px solid var(--border); width: 100%; }
+        .ss-field { display: flex; flex-direction: column; gap: 4px; }
+        .ss-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(125,255,196,0.5); }
+        .ss-value { font-size: 13px; font-weight: 600; }
+        .ss-stage { margin-left: auto; }
+
+        .scroll-hint {
+          position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+          display: flex; flex-direction: column; align-items: center; gap: 4px;
+          background: none; border: none; color: var(--ink-dim); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+          animation: fx-bounce 1.8s ease-in-out infinite;
+        }
+        @keyframes fx-bounce { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 6px); } }
+
+        /* ---- Ticker ---- */
+        .ticker { overflow: hidden; margin-bottom: 34px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 12px 0; }
+        .ticker-track { display: flex; width: max-content; animation: fx-ticker 24s linear infinite; }
+        .ticker-set { display: flex; }
+        .ticker-item { display: flex; align-items: center; gap: 14px; padding: 0 18px; font-size: 12px; letter-spacing: 0.15em; color: var(--ink-dim); white-space: nowrap; }
+        .ticker-item .dot { color: var(--mint); }
+        @keyframes fx-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* ---- About ---- */
+        .about-grid { display: grid; grid-template-columns: 1.3fr 0.9fr; gap: 30px; }
+        @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; } }
+        .about-copy p { margin-bottom: 16px; }
+        .rev-log-compact { margin-top: 20px; display: flex; flex-direction: column; gap: 14px; }
+        .rev-row { display: flex; gap: 14px; align-items: flex-start; }
+        .rev-letter { width: 30px; height: 30px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--mint); }
+        .rev-header { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .rev-header h4 { font-size: 14px; }
+        .rev-header .date { font-size: 11px; color: rgba(125,255,196,0.6); white-space: nowrap; }
+        .rev-body .company { font-size: 12px; color: var(--ink-dim); }
+
+        .about-sidebar { display: flex; flex-direction: column; gap: 18px; }
+        .file-title { display: flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); margin-bottom: 16px; }
+        .file-list { display: flex; flex-direction: column; gap: 10px; }
+        .file-list li { display: flex; justify-content: space-between; font-size: 13px; gap: 10px; border-bottom: 1px dashed rgba(125,255,196,0.12); padding-bottom: 8px; }
+        .file-list .label { color: rgba(125,255,196,0.55); }
+        .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .mini-card { display: flex; flex-direction: column; gap: 8px; padding: 18px; font-size: 12px; }
+        .mini-card svg { font-size: 20px; color: var(--mint); }
+
+        /* ---- Skills ---- */
+        .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        @media (max-width: 900px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .skills-grid { grid-template-columns: 1fr; } }
+        .skill-card { display: flex; flex-direction: column; gap: 10px; }
+        .skill-top { display: flex; justify-content: space-between; align-items: center; }
+        .skill-icon { font-size: 24px; color: var(--mint); }
+        .mod-tag { font-size: 10px; color: rgba(125,255,196,0.5); letter-spacing: 0.15em; }
+        .skill-card h3 { font-size: 17px; }
+        .skill-tech { font-size: 12px; }
+        .skill-accent { font-size: 12px; color: rgba(232,246,238,0.45); }
+        .skill-meter { display: block; height: 5px; background: rgba(125,255,196,0.12); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+        .skill-meter-fill { display: block; height: 100%; width: var(--value); background: linear-gradient(90deg, var(--blue), var(--mint)); }
+
+        /* ---- Works / portfolio ---- */
+        .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        @media (max-width: 900px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .portfolio-grid { grid-template-columns: 1fr; } }
+        .project-card { display: flex; flex-direction: column; padding: 0; overflow: hidden; position: relative; }
+        .mission-tag { position: absolute; top: 12px; left: 12px; z-index: 2; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; background: rgba(5,7,10,0.75); border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px; color: var(--mint); }
+        .project-preview { position: relative; height: 160px; overflow: hidden; }
+        .project-preview-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .project-card:hover .project-preview-image { transform: scale(1.06); }
+        .project-preview-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(5,7,10,0.9)); }
+        .project-content { padding: 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+        .card-top { display: flex; justify-content: space-between; align-items: center; }
+        .card-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(125,255,196,0.6); }
+        .card-link { color: var(--mint); }
+        .project-content h3 { font-size: 16px; }
+        .project-content p { font-size: 12.5px; }
+        .tech-stack { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0; }
+        .project-footer { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--mint); margin-top: auto; }
+        .no-preview .project-content { padding-top: 40px; }
+
+        /* ---- Reviews ---- */
+        .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        @media (max-width: 900px) { .reviews-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .reviews-grid { grid-template-columns: 1fr; } }
+        .review-card { display: flex; flex-direction: column; gap: 10px; }
+        .review-header { display: flex; justify-content: space-between; align-items: center; }
+        .review-stars { display: flex; gap: 2px; color: var(--amber); font-size: 13px; }
+        .review-date { font-size: 11px; color: var(--ink-dim); }
+        .review-title { font-size: 14px; }
+        .review-text { font-size: 12.5px; font-style: italic; }
+        .review-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+        .review-badge { font-size: 10px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--mint); }
+
+        /* ---- Socials ---- */
+        .socials-intro { margin-bottom: 34px; max-width: 620px; }
+        .clearance-stamp { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--mint); border: 1px solid var(--border); padding: 6px 12px; border-radius: 999px; margin-bottom: 16px; }
+        .socials-intro h3 { font-size: clamp(22px, 3vw, 30px); margin-bottom: 10px; }
+        .socials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 34px; }
+        @media (max-width: 900px) { .socials-grid { grid-template-columns: 1fr; } }
+        .social-card { display: flex; flex-direction: column; gap: 10px; transition: border-color 0.2s ease; }
+        .social-card:hover { border-color: var(--mint); }
+        .social-card-icon { font-size: 26px; color: var(--mint); }
+        .social-card-label { font-size: 18px; font-weight: 700; }
+        .social-card-detail { font-size: 12px; color: var(--ink-dim); }
+        .social-card-go { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--mint); margin-top: auto; }
+
+        .contact-channels { display: flex; gap: 22px; flex-wrap: wrap; padding: 20px 0; border-top: 1px solid var(--border); }
+        .contact-channel { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-dim); }
+        .contact-channel svg { color: var(--mint); }
+        .contact-channel.is-static { cursor: default; }
+
+        .footer-inline { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); }
+        .brand-footer { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+        .copyright { font-size: 12px; color: rgba(232,246,238,0.4); }
+
+        /* ---- Reveal choreography ---- */
+        [data-reveal].fx-anim-up { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,0.84,0.44,1); transition-delay: calc(var(--stagger, 0) * 90ms); }
+        [data-reveal].fx-anim-up.is-visible { opacity: 1; transform: translateY(0); }
+
+        [data-reveal].fx-anim-left { opacity: 0; transform: translateX(-50px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,0.84,0.44,1); }
+        [data-reveal].fx-anim-left.is-visible { opacity: 1; transform: translateX(0); }
+
+        [data-reveal].fx-anim-right { opacity: 0; transform: translateX(50px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,0.84,0.44,1); }
+        [data-reveal].fx-anim-right.is-visible { opacity: 1; transform: translateX(0); }
+
+        [data-reveal].fx-anim-scale { opacity: 0; transform: scale(0.85); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16,0.84,0.44,1); transition-delay: calc(var(--stagger, 0) * 80ms); }
+        [data-reveal].fx-anim-scale.is-visible { opacity: 1; transform: scale(1); }
+
+        [data-reveal].fx-anim-flip { opacity: 0; transform: perspective(900px) rotateY(24deg) translateY(20px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,0.84,0.44,1); transition-delay: calc(var(--stagger, 0) * 90ms); }
+        [data-reveal].fx-anim-flip.is-visible { opacity: 1; transform: perspective(900px) rotateY(0deg) translateY(0); }
+
+        [data-reveal].fx-anim-stage { opacity: 0; transform: translateY(-16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        [data-reveal].fx-anim-stage.is-visible { opacity: 1; transform: translateY(0); }
+
+        @media (prefers-reduced-motion: reduce) {
+          html { scroll-behavior: auto; }
+          [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+          .fx-glitch::before, .fx-glitch::after, .wave-emoji, .fx-caret, .ticker-track { animation: none !important; }
+        }
+      `}</style>
     </div>
   );
 }
