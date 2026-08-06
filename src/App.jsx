@@ -285,6 +285,59 @@ const TICKER_ITEMS = [
   "CAVITE, PH",
 ];
 
+/* ----------------------------------------------------------------------
+   Terminal content — derived from the same data used elsewhere on the
+   site, so it never drifts out of sync with the rest of the page.
+   ---------------------------------------------------------------------- */
+
+const pad = (str, len) => (str.length >= len ? str : str + " ".repeat(len - str.length));
+
+const HELP_LINES = [
+  "available commands",
+  `  ${pad("help", 12)}this list`,
+  `  ${pad("whoami", 12)}about the developer`,
+  `  ${pad("contact", 12)}email + phone + location`,
+  `  ${pad("skills", 12)}proficiency, honestly measured`,
+  `  ${pad("projects", 12)}live builds + links`,
+  `  ${pad("experience", 12)}work history`,
+  `  ${pad("socials", 12)}where to find me`,
+  `  ${pad("joke", 12)}dev humor, mostly harmless`,
+  `  ${pad("clear", 12)}wipe the screen`,
+  `  ${pad("exit", 12)}close the terminal`,
+];
+
+const WHOAMI_LINES = [
+  "France Lee — Senior Full-Stack Developer",
+  "Based in Cavite, Philippines",
+  "5+ years shipping web & mobile platforms, cloud infrastructure, and AI-assisted tooling",
+  "Status: open to work",
+];
+
+const CONTACT_LINES = [
+  `${pad("email", 10)}${CONTACT_CHANNELS[0].label}`,
+  `${pad("phone", 10)}${CONTACT_CHANNELS[1].label}`,
+  `${pad("location", 10)}Cavite, Philippines`,
+];
+
+const SKILLS_LINES = SKILLS.map((s) => `${pad(s.name, 26)}${s.level}%`);
+
+const PROJECTS_LINES = PORTFOLIO_ITEMS.map(
+  (p) => `${p.title} — ${p.url && p.url !== "#" ? p.url : "link coming soon"}`
+);
+
+const EXPERIENCE_LINES = SERVICE_RECORD.map(
+  (e) => `${pad(e.date, 22)}${e.role} @ ${e.company}`
+);
+
+const SOCIALS_LINES = SOCIAL_LINKS.map((s) => `${pad(s.label, 10)}${s.href}`);
+
+const JOKES = [
+  "Why do programmers prefer dark mode? Because light attracts bugs.",
+  "I'd tell you a UDP joke, but you might not get it.",
+  "There are only 10 kinds of people: those who understand binary, and those who don't.",
+  "99 little bugs in the code, 99 little bugs. Take one down, patch it around, 127 little bugs in the code.",
+];
+
 function CountUp({ value, duration = 1200 }) {
   const [display, setDisplay] = useState(0);
   const spanRef = useRef(null);
@@ -351,11 +404,17 @@ function App() {
   const [flashLabel, setFlashLabel] = useState(null);
   const [flashKey, setFlashKey] = useState(0);
 
+  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [terminalHistory, setTerminalHistory] = useState([]);
+  const [terminalInput, setTerminalInput] = useState("");
+
   const menuRef = useRef(null);
   const hamburgerRef = useRef(null);
   const canvasRef = useRef(null);
   const prevSectionRef = useRef("home");
   const flashTimeoutRef = useRef(null);
+  const terminalInputRef = useRef(null);
+  const terminalBodyRef = useRef(null);
   const tilt = useTiltHandlers();
 
   const activeIndex = Math.max(0, STAGES.findIndex((item) => item.id === activeSection));
@@ -512,7 +571,7 @@ function App() {
      matching the one-section-per-scroll feel for keyboard users. */
   useEffect(() => {
     const onKeyDown = (event) => {
-      if (isMenuOpen) return;
+      if (isMenuOpen || terminalOpen) return;
       const tag = document.activeElement?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
 
@@ -527,7 +586,7 @@ function App() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex, isMenuOpen]);
+  }, [activeIndex, isMenuOpen, terminalOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -596,6 +655,96 @@ function App() {
     return () => revealObserver.disconnect();
   }, []);
 
+  /* Global "/" shortcut to open the terminal, Escape to close it —
+     mirrors the shortcut hint shown on the trigger button. */
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      const tag = document.activeElement?.tagName;
+      if (event.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
+        event.preventDefault();
+        setTerminalOpen((prev) => !prev);
+      } else if (event.key === "Escape" && terminalOpen) {
+        setTerminalOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [terminalOpen]);
+
+  /* Focus the terminal input whenever the panel opens */
+  useEffect(() => {
+    if (terminalOpen && terminalInputRef.current) {
+      terminalInputRef.current.focus();
+    }
+  }, [terminalOpen]);
+
+  /* Keep the terminal scrolled to the newest line */
+  useEffect(() => {
+    if (terminalBodyRef.current) {
+      terminalBodyRef.current.scrollTop = terminalBodyRef.current.scrollHeight;
+    }
+  }, [terminalHistory, terminalOpen]);
+
+  const runTerminalCommand = (raw) => {
+    const cmd = raw.trim();
+    if (!cmd) {
+      setTerminalHistory((h) => [...h, { type: "input", lines: [""] }]);
+      return;
+    }
+
+    const key = cmd.split(/\s+/)[0].toLowerCase();
+    let output = null;
+
+    switch (key) {
+      case "help":
+        output = HELP_LINES;
+        break;
+      case "whoami":
+        output = WHOAMI_LINES;
+        break;
+      case "contact":
+        output = CONTACT_LINES;
+        break;
+      case "skills":
+        output = SKILLS_LINES;
+        break;
+      case "projects":
+        output = PROJECTS_LINES;
+        break;
+      case "experience":
+        output = EXPERIENCE_LINES;
+        break;
+      case "socials":
+        output = SOCIALS_LINES;
+        break;
+      case "joke":
+        output = [JOKES[Math.floor(Math.random() * JOKES.length)]];
+        break;
+      case "clear":
+        setTerminalHistory([]);
+        return;
+      case "exit":
+        output = ["closing terminal..."];
+        setTimeout(() => setTerminalOpen(false), 350);
+        break;
+      default:
+        output = [`command not found: ${key}`, "type 'help' to see available commands."];
+        break;
+    }
+
+    setTerminalHistory((h) => [
+      ...h,
+      { type: "input", lines: [cmd] },
+      { type: "output", lines: output },
+    ]);
+  };
+
+  const handleTerminalSubmit = (event) => {
+    event.preventDefault();
+    runTerminalCommand(terminalInput);
+    setTerminalInput("");
+  };
+
   return (
     <div className="app" style={{ "--stage-accent": activeStage?.accent || "#7dffc4" }}>
       {/* Boot-up HUD overlay */}
@@ -659,6 +808,76 @@ function App() {
           </a>
         ))}
       </div>
+
+      {/* Terminal trigger — bottom-left, opens the interactive panel */}
+      <button
+        type="button"
+        className={`term-trigger ${terminalOpen ? "is-active" : ""}`}
+        onClick={() => setTerminalOpen((prev) => !prev)}
+        aria-label="Open interactive terminal"
+        aria-expanded={terminalOpen}
+      >
+        <span className="term-trigger-dot" aria-hidden="true" />
+        <FiTerminal />
+        <span className="term-trigger-label">~ open terminal</span>
+        <kbd className="term-trigger-key">/</kbd>
+      </button>
+
+      {terminalOpen && (
+        <div className="term-window" role="dialog" aria-label="Interactive terminal">
+          <div className="term-titlebar">
+            <div className="term-dots" aria-hidden="true">
+              <span className="term-dot dot-red" />
+              <span className="term-dot dot-amber" />
+              <span className="term-dot dot-green" />
+            </div>
+            <span className="term-title">france@portfolio: ~</span>
+            <button
+              type="button"
+              className="term-close"
+              onClick={() => setTerminalOpen(false)}
+              aria-label="Close terminal"
+            >
+              <FiX />
+            </button>
+          </div>
+
+          <div className="term-body" ref={terminalBodyRef}>
+            <div className="term-line term-banner">FRANCE LEE shell v1.0 (web edition)</div>
+            <div className="term-line term-dim">type 'help' to see what i can do.</div>
+
+            {terminalHistory.map((entry, i) => (
+              <div className={`term-block term-${entry.type}`} key={i}>
+                {entry.lines.map((line, j) =>
+                  entry.type === "input" ? (
+                    <div className="term-line" key={j}>
+                      <span className="term-prompt">france@portfolio:~$</span> {line}
+                    </div>
+                  ) : (
+                    <div className="term-line term-output-line" key={j}>
+                      {line}
+                    </div>
+                  )
+                )}
+              </div>
+            ))}
+
+            <form className="term-input-row" onSubmit={handleTerminalSubmit}>
+              <span className="term-prompt">france@portfolio:~$</span>
+              <input
+                ref={terminalInputRef}
+                className="term-input"
+                value={terminalInput}
+                onChange={(e) => setTerminalInput(e.target.value)}
+                autoComplete="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                aria-label="Terminal command input"
+              />
+            </form>
+          </div>
+        </div>
+      )}
 
       <nav className={`nav-shell ${scrolled ? "scrolled" : ""}`}>
         <a
@@ -1266,6 +1485,72 @@ function App() {
           opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
         }
         .fx-rail-dot:hover .fx-rail-tip { opacity: 1; }
+
+        /* ---- Terminal trigger + window ---- */
+        .term-trigger {
+          position: fixed; bottom: 24px; left: 24px; z-index: 55;
+          display: flex; align-items: center; gap: 9px;
+          background: rgba(10,14,20,0.9); border: 1px solid var(--border); border-radius: 999px;
+          padding: 10px 16px; color: var(--ink); font-size: 12px; letter-spacing: 0.05em;
+          backdrop-filter: blur(8px); transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .term-trigger:hover, .term-trigger.is-active { border-color: var(--mint); box-shadow: 0 0 20px rgba(125,255,196,0.18); transform: translateY(-2px); }
+        .term-trigger svg { font-size: 15px; color: var(--mint); }
+        .term-trigger-label { text-transform: lowercase; }
+        .term-trigger-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 6px var(--mint); }
+        .term-trigger-key {
+          font-family: "Space Grotesk", monospace; font-size: 11px; color: var(--ink-dim);
+          border: 1px solid var(--border); border-radius: 5px; padding: 1px 7px; margin-left: 2px;
+        }
+        @media (max-width: 640px) {
+          .term-trigger-label { display: none; }
+          .term-trigger { padding: 10px 12px; }
+        }
+
+        .term-window {
+          position: fixed; bottom: 84px; left: 24px; z-index: 90;
+          width: min(460px, calc(100vw - 40px)); height: min(440px, 70vh);
+          display: flex; flex-direction: column; overflow: hidden;
+          background: #0a0d11; border: 1px solid rgba(125,255,196,0.3); border-radius: 14px;
+          box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 0 40px rgba(125,255,196,0.08);
+          font-family: "Fira Code", "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+          animation: term-pop 0.22s cubic-bezier(0.16,0.84,0.44,1);
+        }
+        @keyframes term-pop { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .term-titlebar {
+          display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+          background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(125,255,196,0.15);
+        }
+        .term-dots { display: flex; gap: 7px; }
+        .term-dot { width: 11px; height: 11px; border-radius: 50%; display: block; }
+        .dot-red { background: #ff5f56; }
+        .dot-amber { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        .term-title { flex: 1; text-align: center; font-size: 11.5px; color: var(--ink-dim); letter-spacing: 0.04em; }
+        .term-close { background: none; border: none; color: var(--ink-dim); display: flex; align-items: center; font-size: 14px; padding: 2px; }
+        .term-close:hover { color: var(--pink); }
+
+        .term-body {
+          flex: 1; overflow-y: auto; padding: 14px 16px 12px;
+          font-size: 12.5px; line-height: 1.65; color: var(--ink);
+        }
+        .term-body::-webkit-scrollbar { width: 8px; }
+        .term-body::-webkit-scrollbar-thumb { background: rgba(125,255,196,0.25); border-radius: 4px; }
+
+        .term-line { white-space: pre-wrap; word-break: break-word; }
+        .term-banner { color: var(--mint); font-weight: 600; }
+        .term-dim { color: var(--ink-dim); margin-bottom: 8px; }
+        .term-block { margin-bottom: 2px; }
+        .term-block.term-output { margin-bottom: 10px; }
+        .term-output-line { color: rgba(232,246,238,0.85); }
+        .term-prompt { color: var(--mint); font-weight: 600; }
+
+        .term-input-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .term-input {
+          flex: 1; background: none; border: none; outline: none; color: var(--ink);
+          font-family: inherit; font-size: 12.5px; caret-color: var(--mint);
+        }
 
         /* ---- Nav ---- */
         .nav-shell {
