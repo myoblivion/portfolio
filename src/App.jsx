@@ -39,6 +39,14 @@ import cryptoxShot from "./assets/sites/cryptox-platform.png";
    stages, snapped one at a time, each with its own accent wash. Scroll
    (or use the side rail / arrow keys) to move between stages, the way
    you'd move between levels in a HUD-driven game menu.
+
+   PERF NOTE: scroll position, cursor position, and the typewriter tick
+   used to live in React state, which meant every mousemove/scroll frame
+   re-rendered the *entire* app tree (nav, all six stages, terminal,
+   etc). They now write directly to the DOM through refs, so React only
+   re-renders when something structurally meaningful changes (menu open,
+   active section, terminal state). Reveal-on-scroll now fires once per
+   element instead of toggling in/out on every pass.
    ---------------------------------------------------------------------- */
 
 const STAGES = [
@@ -393,14 +401,8 @@ function useTiltHandlers(maxTilt = 8) {
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [scrollY, setScrollY] = useState(0);
   const [booted, setBooted] = useState(false);
-  const [cursorPos, setCursorPos] = useState({ x: -200, y: -200 });
-  const [cursorActive, setCursorActive] = useState(false);
-  const [typedLength, setTypedLength] = useState(0);
   const [flashLabel, setFlashLabel] = useState(null);
   const [flashKey, setFlashKey] = useState(0);
 
@@ -416,6 +418,16 @@ function App() {
   const terminalInputRef = useRef(null);
   const terminalBodyRef = useRef(null);
   const tilt = useTiltHandlers();
+
+  // Scroll/cursor/typewriter-driven visuals write straight to the DOM
+  // through these refs instead of React state, so they never trigger a
+  // full app re-render (the biggest single perf win over the previous
+  // build, since those fired on every scroll/mousemove frame).
+  const navShellRef = useRef(null);
+  const progressBarRef = useRef(null);
+  const pinnedPhotoRef = useRef(null);
+  const cursorGlowRef = useRef(null);
+  const typewriterRef = useRef(null);
 
   const activeIndex = Math.max(0, STAGES.findIndex((item) => item.id === activeSection));
   const activeStage = STAGES[activeIndex];
@@ -442,13 +454,16 @@ function App() {
     return () => clearTimeout(t);
   }, []);
 
-  /* Typewriter on the hero subtitle */
+  /* Typewriter on the hero subtitle — writes directly to the span via
+     ref so it doesn't re-render the whole app once per character. */
   useEffect(() => {
     if (!booted) return undefined;
     let i = 0;
     const interval = setInterval(() => {
       i += 1;
-      setTypedLength(i);
+      if (typewriterRef.current) {
+        typewriterRef.current.textContent = HERO_SUBTITLE.slice(0, i);
+      }
       if (i >= HERO_SUBTITLE.length) clearInterval(interval);
     }, 22);
     return () => clearInterval(interval);
@@ -475,15 +490,37 @@ function App() {
     };
   }, []);
 
-  /* Cursor glow reticle */
+  /* Cursor glow reticle — position/opacity are written directly to the
+     element via ref (rAF-throttled) instead of React state, so moving
+     the mouse never re-renders the app. */
   useEffect(() => {
     if (!window.matchMedia("(pointer: fine)").matches) return undefined;
-    const onMove = (event) => {
-      setCursorPos({ x: event.clientX, y: event.clientY });
-      setCursorActive(true);
+
+    let rafId = 0;
+    let pending = null;
+    let revealed = false;
+
+    const apply = () => {
+      rafId = 0;
+      const el = cursorGlowRef.current;
+      if (!el || !pending) return;
+      el.style.transform = `translate(${pending.x}px, ${pending.y}px)`;
+      if (!revealed) {
+        revealed = true;
+        el.style.opacity = "1";
+      }
     };
+
+    const onMove = (event) => {
+      pending = { x: event.clientX, y: event.clientY };
+      if (!rafId) rafId = requestAnimationFrame(apply);
+    };
+
     window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   /* Ambient starfield */
@@ -494,8 +531,12 @@ function App() {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
     let rafId;
+    let isHidden = document.hidden;
 
-    const PARTICLE_COUNT = 70;
+    // PERF: fewer particles than the original build, and the canvas no
+    // longer relies on mix-blend-mode (see CSS) which forced the
+    // compositor to re-blend this layer against everything beneath it.
+    const PARTICLE_COUNT = 42;
     const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
@@ -509,9 +550,18 @@ function App() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     };
+    const onVisibility = () => {
+      isHidden = document.hidden;
+    };
     window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
 
     const draw = () => {
+      // PERF: skip all canvas work while the tab is backgrounded.
+      if (isHidden) {
+        rafId = requestAnimationFrame(draw);
+        return;
+      }
       ctx.clearRect(0, 0, width, height);
       particles.forEach((p) => {
         p.x += p.vx;
@@ -534,11 +584,15 @@ function App() {
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* Scroll progress bar, throttled with rAF */
+  /* Scroll-driven visuals: progress bar fill, nav background, and the
+     hero photo's parallax offset. All three write straight to the DOM
+     via refs (rAF-throttled) instead of React state, avoiding a full
+     app re-render on every scroll frame. */
   useEffect(() => {
     let rafId = 0;
     let ticking = false;
@@ -547,9 +601,17 @@ function App() {
       const doc = document.documentElement;
       const max = doc.scrollHeight - doc.clientHeight;
       const y = window.scrollY;
-      setScrolled(y > 24);
-      setScrollProgress(max > 0 ? Math.min(100, (y / max) * 100) : 0);
-      setScrollY(y);
+      const progress = max > 0 ? Math.min(1, y / max) : 0;
+
+      if (progressBarRef.current) {
+        progressBarRef.current.style.transform = `scaleX(${progress})`;
+      }
+      if (navShellRef.current) {
+        navShellRef.current.classList.toggle("scrolled", y > 24);
+      }
+      if (pinnedPhotoRef.current) {
+        pinnedPhotoRef.current.style.transform = `translateY(${y * 0.06}px)`;
+      }
       ticking = false;
     };
 
@@ -636,6 +698,11 @@ function App() {
     return () => observer.disconnect();
   }, []);
 
+  /* Reveal-on-scroll — ONE TIME ONLY: once an element has played its
+     entrance animation it keeps the "is-visible" class and is
+     unobserved, so scrolling back up/down past it never re-triggers
+     the animation (and the observer has fewer targets to track over
+     time, which is cheaper). */
   useEffect(() => {
     const revealTargets = document.querySelectorAll("[data-reveal]");
     const revealObserver = new IntersectionObserver(
@@ -643,8 +710,7 @@ function App() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
-          } else {
-            entry.target.classList.remove("is-visible");
+            revealObserver.unobserve(entry.target);
           }
         });
       },
@@ -684,6 +750,21 @@ function App() {
       terminalBodyRef.current.scrollTop = terminalBodyRef.current.scrollHeight;
     }
   }, [terminalHistory, terminalOpen]);
+
+  /* Load the Calendly embed script once, for the inline booking widget
+     in the Socials section. Works fully on the free Calendly plan. */
+  useEffect(() => {
+    if (document.getElementById("calendly-widget-script")) return undefined;
+    const script = document.createElement("script");
+    script.id = "calendly-widget-script";
+    script.src = "https://assets.calendly.com/assets/external/widget.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      // Left in place intentionally — Calendly's script is safe to persist
+      // across re-renders and avoids re-fetching on remount.
+    };
+  }, []);
 
   const runTerminalCommand = (raw) => {
     const cmd = raw.trim();
@@ -761,13 +842,12 @@ function App() {
 
       <canvas ref={canvasRef} className="fx-starfield" aria-hidden="true" />
 
-      {cursorActive && (
-        <div
-          className="fx-cursor-glow"
-          aria-hidden="true"
-          style={{ transform: `translate(${cursorPos.x}px, ${cursorPos.y}px)` }}
-        />
-      )}
+      <div
+        ref={cursorGlowRef}
+        className="fx-cursor-glow"
+        aria-hidden="true"
+        style={{ transform: "translate(-200px, -200px)", opacity: 0 }}
+      />
 
       {flashLabel && (
         <div className="fx-levelup" key={flashKey} aria-hidden="true">
@@ -777,7 +857,7 @@ function App() {
         </div>
       )}
 
-      <div className="scroll-progress" style={{ transform: `scaleX(${scrollProgress / 100})` }} />
+      <div ref={progressBarRef} className="scroll-progress" style={{ transform: "scaleX(0)" }} />
 
       <div className="grain" aria-hidden="true" />
 
@@ -879,7 +959,7 @@ function App() {
         </div>
       )}
 
-      <nav className={`nav-shell ${scrolled ? "scrolled" : ""}`}>
+      <nav ref={navShellRef} className="nav-shell">
         <a
           className="brand"
           href="#home"
@@ -950,7 +1030,7 @@ function App() {
               </h1>
 
               <h2 className="fx-typewriter" aria-label={HERO_SUBTITLE}>
-                <span aria-hidden="true">{HERO_SUBTITLE.slice(0, typedLength)}</span>
+                <span ref={typewriterRef} aria-hidden="true" />
                 <span className="fx-caret" aria-hidden="true" />
               </h2>
 
@@ -1001,7 +1081,7 @@ function App() {
             </div>
 
             <div className="hero-visual fx-anim fx-anim-right" data-reveal>
-              <div className="pinned-photo" style={{ transform: `translateY(${scrollY * 0.06}px)` }}>
+              <div ref={pinnedPhotoRef} className="pinned-photo">
                 <img src={profileImage} alt="France Lee" className="portrait-image" />
                 <span className="rank-ring" aria-hidden="true">
                   <span className="rank-ring-track" />
@@ -1203,7 +1283,13 @@ function App() {
 
                     {hasPreview ? (
                       <div className="project-preview" aria-hidden="true">
-                        <img src={item.screenshot} alt="" className="project-preview-image" />
+                        <img
+                          src={item.screenshot}
+                          alt=""
+                          className="project-preview-image"
+                          loading="lazy"
+                          decoding="async"
+                        />
                         <div className="project-preview-overlay" />
                       </div>
                     ) : null}
@@ -1325,6 +1411,20 @@ function App() {
               ))}
             </div>
 
+            <div className="calendly-panel panel fx-anim fx-anim-up" data-reveal>
+              <div className="calendly-panel-header">
+                <FiTerminal />
+                <div>
+                  <h3>Book a call</h3>
+                  <p>Pick a time that works for you, no back-and-forth needed.</p>
+                </div>
+              </div>
+              <div
+                className="calendly-inline-widget"
+                data-url="https://calendly.com/francelee594/30min?hide_gdpr_banner=1"
+              />
+            </div>
+
             <div className="contact-channels fx-anim fx-anim-up" data-reveal>
               {CONTACT_CHANNELS.map((c) => (
                 <a key={c.label} href={c.href} className="contact-channel">
@@ -1389,7 +1489,7 @@ function App() {
           border: 1px solid var(--border);
           border-radius: 16px;
           padding: 26px;
-          backdrop-filter: blur(6px);
+          backdrop-filter: blur(4px);
         }
 
         .stage-tag {
@@ -1423,7 +1523,12 @@ function App() {
         }
 
         /* ---- HUD chrome (loader / starfield / cursor / flash / grain) ---- */
-        .fx-starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: screen; }
+        /* PERF: dropped mix-blend-mode — a fixed full-viewport blended
+           canvas forces the compositor to re-blend against everything
+           beneath it on every paint even when its own pixels haven't
+           changed much. A flat, lower-opacity layer looks almost
+           identical for a fraction of the compositing cost. */
+        .fx-starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.35; }
 
         .fx-loader {
           position: fixed; inset: 0; z-index: 9999;
@@ -1444,7 +1549,8 @@ function App() {
           position: fixed; top: 0; left: 0; width: 260px; height: 260px;
           margin-left: -130px; margin-top: -130px; border-radius: 50%;
           background: radial-gradient(circle, rgba(125,255,196,0.08) 0%, rgba(125,255,196,0) 70%);
-          pointer-events: none; z-index: 5; transition: transform 0.08s linear; will-change: transform;
+          pointer-events: none; z-index: 5; transition: transform 0.08s linear, opacity 0.25s ease;
+          will-change: transform;
         }
 
         .fx-levelup {
@@ -1461,7 +1567,7 @@ function App() {
           100% { opacity: 0; transform: translate(-50%, -8px); }
         }
 
-        .scroll-progress { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--mint); transform-origin: left; z-index: 70; }
+        .scroll-progress { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: var(--mint); transform-origin: left; z-index: 70; will-change: transform; }
         .grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.03; background-image: radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px); background-size: 3px 3px; }
 
         .hud-corner { position: fixed; width: 26px; height: 26px; border: 1px solid rgba(125,255,196,0.35); z-index: 45; pointer-events: none; }
@@ -1626,7 +1732,7 @@ function App() {
         .stat-bar-value { text-align: right; color: var(--mint); font-weight: 600; }
 
         .hero-visual { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .pinned-photo { position: relative; width: min(320px, 80%); }
+        .pinned-photo { position: relative; width: min(320px, 80%); will-change: transform; }
         .portrait-image { width: 100%; border-radius: 20px; border: 1px solid var(--border); display: block; }
         .rank-ring { position: absolute; bottom: -14px; right: -14px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
         .rank-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--mint); background: var(--bg); }
@@ -1650,7 +1756,7 @@ function App() {
 
         /* ---- Ticker ---- */
         .ticker { overflow: hidden; margin-bottom: 34px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 12px 0; }
-        .ticker-track { display: flex; width: max-content; animation: fx-ticker 24s linear infinite; }
+        .ticker-track { display: flex; width: max-content; animation: fx-ticker 24s linear infinite; will-change: transform; }
         .ticker-set { display: flex; }
         .ticker-item { display: flex; align-items: center; gap: 14px; padding: 0 18px; font-size: 12px; letter-spacing: 0.15em; color: var(--ink-dim); white-space: nowrap; }
         .ticker-item .dot { color: var(--mint); }
@@ -1678,10 +1784,14 @@ function App() {
         .mini-card svg { font-size: 20px; color: var(--mint); }
 
         /* ---- Skills ---- */
+        /* PERF: content-visibility lets the browser skip layout/paint
+           for card grids while they're off-screen, and contain-intrinsic-size
+           reserves an estimated box so scroll position doesn't jump once
+           the real content is measured. */
         .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         @media (max-width: 900px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) { .skills-grid { grid-template-columns: 1fr; } }
-        .skill-card { display: flex; flex-direction: column; gap: 10px; }
+        .skill-card { display: flex; flex-direction: column; gap: 10px; content-visibility: auto; contain-intrinsic-size: 0 300px; }
         .skill-top { display: flex; justify-content: space-between; align-items: center; }
         .skill-icon { font-size: 24px; color: var(--mint); }
         .mod-tag { font-size: 10px; color: rgba(125,255,196,0.5); letter-spacing: 0.15em; }
@@ -1695,7 +1805,7 @@ function App() {
         .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         @media (max-width: 900px) { .portfolio-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) { .portfolio-grid { grid-template-columns: 1fr; } }
-        .project-card { display: flex; flex-direction: column; padding: 0; overflow: hidden; position: relative; }
+        .project-card { display: flex; flex-direction: column; padding: 0; overflow: hidden; position: relative; content-visibility: auto; contain-intrinsic-size: 0 360px; }
         .mission-tag { position: absolute; top: 12px; left: 12px; z-index: 2; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; background: rgba(5,7,10,0.75); border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px; color: var(--mint); }
         .project-preview { position: relative; height: 160px; overflow: hidden; }
         .project-preview-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
@@ -1715,7 +1825,7 @@ function App() {
         .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         @media (max-width: 900px) { .reviews-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) { .reviews-grid { grid-template-columns: 1fr; } }
-        .review-card { display: flex; flex-direction: column; gap: 10px; }
+        .review-card { display: flex; flex-direction: column; gap: 10px; content-visibility: auto; contain-intrinsic-size: 0 260px; }
         .review-header { display: flex; justify-content: space-between; align-items: center; }
         .review-stars { display: flex; gap: 2px; color: var(--amber); font-size: 13px; }
         .review-date { font-size: 11px; color: var(--ink-dim); }
@@ -1737,6 +1847,24 @@ function App() {
         .social-card-detail { font-size: 12px; color: var(--ink-dim); }
         .social-card-go { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--mint); margin-top: auto; }
 
+        .calendly-panel { margin-bottom: 34px; padding: 22px; }
+        .calendly-panel-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+        .calendly-panel-header svg { font-size: 20px; color: var(--mint); margin-top: 3px; }
+        .calendly-panel-header h3 { font-size: 18px; margin-bottom: 4px; }
+        .calendly-panel-header p { font-size: 13px; }
+        .calendly-inline-widget {
+          min-width: 280px;
+          height: 660px;
+          border-radius: 12px;
+          overflow: hidden;
+          background: #fff;
+          content-visibility: auto;
+          contain-intrinsic-size: 0 660px;
+        }
+        @media (max-width: 600px) {
+          .calendly-inline-widget { height: 720px; }
+        }
+
         .contact-channels { display: flex; gap: 22px; flex-wrap: wrap; padding: 20px 0; border-top: 1px solid var(--border); }
         .contact-channel { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-dim); }
         .contact-channel svg { color: var(--mint); }
@@ -1746,7 +1874,7 @@ function App() {
         .brand-footer { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
         .copyright { font-size: 12px; color: rgba(232,246,238,0.4); }
 
-        /* ---- Reveal choreography ---- */
+        /* ---- Reveal choreography — plays once, then stays visible ---- */
         [data-reveal].fx-anim-up { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,0.84,0.44,1); transition-delay: calc(var(--stagger, 0) * 90ms); }
         [data-reveal].fx-anim-up.is-visible { opacity: 1; transform: translateY(0); }
 
@@ -1764,6 +1892,13 @@ function App() {
 
         [data-reveal].fx-anim-stage { opacity: 0; transform: translateY(-16px); transition: opacity 0.6s ease, transform 0.6s ease; }
         [data-reveal].fx-anim-stage.is-visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 600px) {
+          /* PERF: fixed decorative overlays cost the same GPU/compositing
+             work on a weak mobile chip as on desktop, for the least
+             visible payoff at small screen sizes. Cut them here. */
+          .grain, .hud-corner, .fx-cursor-glow { display: none; }
+        }
 
         @media (prefers-reduced-motion: reduce) {
           html { scroll-behavior: auto; }

@@ -60,6 +60,15 @@
   );
 }
 
+/* Perf helper: isolates layout/paint to the element itself so browser
+   work doesn't leak into sibling recalculation. Applied to repeating
+   card components below. */
+@mixin contain-card {
+  contain: content;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 340px;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -129,17 +138,21 @@ textarea:focus-visible {
 }
 
 /* Scanline grain: a single repeating-gradient paint, never touched
-   again. Reads as CRT/HUD texture without a filter or animation. */
+   again. Reads as CRT/HUD texture without a filter or animation.
+   PERF: mix-blend-mode removed — a fixed, full-viewport blended layer
+   forces the compositor to recompute blending against everything
+   beneath it on every scroll/paint, even though this layer itself
+   never changes. A flat low-opacity layer gives ~95% of the same look
+   for a fraction of the compositing cost. */
 .grain {
   position: fixed;
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.5;
-  mix-blend-mode: overlay;
+  opacity: 0.06;
   background-image: repeating-linear-gradient(
     0deg,
-    rgba(255, 255, 255, 0.045) 0px,
+    rgba(255, 255, 255, 0.12) 0px,
     transparent 1px,
     transparent 3px
   );
@@ -238,6 +251,9 @@ footer {
     radial-gradient(ellipse 80% 55% at 50% 0%, rgba(63, 124, 232, 0.16), transparent 60%),
     linear-gradient(180deg, var(--bg-soft), var(--bg) 60%);
   background-position: -1px -1px;
+  /* PERF: isolates this large static paint from surrounding layout
+     changes so it doesn't get needlessly repainted alongside them. */
+  contain: paint;
 }
 
 /* ---------- Nav ---------- */
@@ -319,6 +335,9 @@ footer {
   box-shadow: 0 0 8px rgba(53, 231, 255, 0.8);
   flex: none;
   animation: pulse-dot 2.4s ease-in-out infinite;
+  /* PERF: infinite animation — promote to its own compositor layer
+     up front instead of the browser re-deciding every cycle. */
+  will-change: opacity;
 }
 
 .hamburger {
@@ -410,8 +429,10 @@ footer {
   justify-content: center;
   padding-top: 110px;
 
-  /* A single scanline drifting down the field — one fixed-size layer
-     animating `top`, clipped by the hero's own overflow. */
+  /* A single scanline drifting down the field. PERF: animates
+     `transform: translateY()` instead of `top` — `top` is a layout
+     property and forces the browser to recompute position every
+     frame; `transform` is compositor-only and effectively free. */
   &::after {
     content: "";
     position: absolute;
@@ -421,6 +442,7 @@ footer {
     height: 220px;
     background: linear-gradient(180deg, transparent, rgba(53, 231, 255, 0.09), transparent);
     animation: scanline 9s linear infinite;
+    will-change: transform;
     pointer-events: none;
     z-index: 0;
   }
@@ -680,6 +702,9 @@ footer {
   border: 2px dashed var(--cyan-deep);
   background: rgba(5, 11, 22, 0.88);
   animation: spin 11s linear infinite;
+  /* PERF: same reasoning as .status-dot — infinite animation gets a
+     standing compositor layer instead of being re-evaluated each loop. */
+  will-change: transform;
 }
 
 .rank-label {
@@ -775,6 +800,7 @@ footer {
   display: flex;
   width: max-content;
   animation: ticker-scroll 30s linear infinite;
+  will-change: transform;
 }
 
 .ticker-set {
@@ -1009,6 +1035,7 @@ footer {
 }
 
 .skill-card {
+  @include contain-card;
   position: relative;
   padding: 1.35rem;
   overflow: hidden;
@@ -1105,6 +1132,7 @@ footer {
 }
 
 .project-card {
+  @include contain-card;
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -1345,6 +1373,7 @@ footer {
 }
 
 .review-card {
+  @include contain-card;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -1601,12 +1630,15 @@ footer {
   }
 }
 
+/* PERF: was animating `top` (layout property). Now animates
+   `transform: translateY()` over the same visual distance —
+   compositor-only, no layout thrashing on every frame. */
 @keyframes scanline {
   0% {
-    top: -20%;
+    transform: translateY(0);
   }
   100% {
-    top: 110%;
+    transform: translateY(1300%);
   }
 }
 
@@ -1829,6 +1861,15 @@ footer {
     top: -1.6rem;
     font-size: clamp(2.2rem, 16vw, 3.4rem);
     opacity: 0.7;
+  }
+
+  /* PERF: decorative fixed overlays cost the same GPU/compositing
+     work on a weak mobile chip as on desktop, for the least visible
+     payoff at small screen sizes. Cut them here. */
+  .grain,
+  .hero::after,
+  .hud-corner {
+    display: none;
   }
 }
 
