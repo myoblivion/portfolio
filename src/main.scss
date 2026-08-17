@@ -236,7 +236,7 @@ footer {
 }
 
 .section-padding {
-  padding: 96px 0;
+  padding: 42px 0;
 }
 
 .panel {
@@ -1672,8 +1672,12 @@ footer {
 }
 
 @media (max-width: 860px) {
+  .stage-padded {
+    padding: 44px 5vw 34px !important;
+  }
+
   .section-padding {
-    padding: 70px 0;
+    padding: 34px 0;
   }
 
   .hero {
@@ -1871,6 +1875,31 @@ footer {
   .hud-corner {
     display: none;
   }
+}
+
+/* ---------- Compact section spacing ---------- */
+/*
+ * Content sections should NOT occupy a full viewport when their content
+ * is much shorter than the viewport. This also supports the stage classes
+ * used by the React portfolio component.
+ */
+.stage {
+  min-height: auto !important;
+  align-items: flex-start;
+}
+
+.stage-padded {
+  min-height: auto !important;
+  padding: 56px 6vw 42px !important;
+}
+
+.section-padding {
+  padding: 42px 0;
+}
+
+/* Keep the actual hero spacious; only content sections are compact. */
+.hero {
+  min-height: 100vh;
 }
 
 /* Reduced motion: kill all transitions/animations and skip the reveal

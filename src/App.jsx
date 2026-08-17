@@ -58,12 +58,7 @@ const STAGES = [
   { id: "socials", label: "Socials", sheet: "06", accent: "#7dffc4" },
 ];
 
-const ATTRIBUTES = [
-  { label: "Frontend", value: 92 },
-  { label: "Backend", value: 90 },
-  { label: "Cloud / DevOps", value: 85 },
-  { label: "AI Integration", value: 80 },
-];
+
 
 const HERO_SUBTITLE = "I design and build the systems that keep fast products running.";
 
@@ -158,7 +153,6 @@ const SKILLS = [
     icon: <FaReact />,
     tech: "React, React Native, Vue, JavaScript, TypeScript",
     accent: "UI systems, responsive motion, component architecture",
-    level: 92,
   },
   {
     tag: "MOD-02",
@@ -166,7 +160,6 @@ const SKILLS = [
     icon: <FaNodeJs />,
     tech: "Node.js, PHP, Laravel, Python",
     accent: "APIs, business logic, automation, structured services",
-    level: 90,
   },
   {
     tag: "MOD-03",
@@ -174,7 +167,6 @@ const SKILLS = [
     icon: <FiCloud />,
     tech: "AWS, DigitalOcean, CI/CD",
     accent: "Deployment pipelines, environments, reliability",
-    level: 85,
   },
   {
     tag: "MOD-04",
@@ -182,7 +174,6 @@ const SKILLS = [
     icon: <FiCpu />,
     tech: "Ollama, OpenAI API, automation bots",
     accent: "LLM workflows, task automation, smart tooling",
-    level: 80,
   },
   {
     tag: "MOD-05",
@@ -190,7 +181,6 @@ const SKILLS = [
     icon: <FiDatabase />,
     tech: "MySQL, PostgreSQL, MongoDB",
     accent: "Schema design, querying, performance, data integrity",
-    level: 88,
   },
   {
     tag: "MOD-06",
@@ -198,7 +188,6 @@ const SKILLS = [
     icon: <FaWordpress />,
     tech: "WordPress, Gutenberg, WooCommerce",
     accent: "Conversion-focused builds, editor-friendly delivery",
-    level: 84,
   },
 ];
 
@@ -216,6 +205,8 @@ const REVIEWS = [
     text: "France is truly exceptional! He operates at an impressive speed and possesses extensive knowledge of WordPress. I value his communication skills and professionalism so much. I will certainly consider hiring...",
     date: "Sep 12, 2024",
     rating: 5,
+    author: "Marvin B.",
+    source: "Upwork",
     badges: ["Clear Communicator", "Professional"],
   },
   {
@@ -223,6 +214,8 @@ const REVIEWS = [
     text: "I reached out to France to help with some web development and to fix a few bugs on my site. I was genuinely impressed by the quality and punctuality of his work. He really got what I wanted and delivered brilliantly on the task. I'd definitely collaborate with him again in a heartbeat.",
     date: "Oct 12, 2023",
     rating: 5,
+    author: "Lizel N.",
+    source: "Upwork",
     badges: ["Committed to Quality", "Reliable", "Collaborative"],
   },
   {
@@ -230,6 +223,8 @@ const REVIEWS = [
     text: "Really pleased with the work with France. He developed a 5-page landing page that nicely met our needs. The AI-generated images were of good quality and the overall content and design were well-thought-out. He's a professional and worked efficiently. A solid choice for web design projects.",
     date: "Jan 23, 2024",
     rating: 5,
+    author: "Shane",
+    source: "Upwork",
     badges: ["Professional", "Committed to Quality"],
   },
   {
@@ -237,6 +232,8 @@ const REVIEWS = [
     text: "Great to work with. Helped us in our work and delivered on time!",
     date: "Apr 5, 2024",
     rating: 5,
+    author: "Lee V.",
+    source: "Upwork",
     badges: ["Collaborative", "Reliable"],
   },
   {
@@ -244,6 +241,8 @@ const REVIEWS = [
     text: "Great experience! Very responsive!",
     date: "Jun 7, 2024",
     rating: 5,
+    author: "Anthony J.",
+    source: "Upwork",
     badges: ["Clear Communicator"],
   },
   {
@@ -251,6 +250,8 @@ const REVIEWS = [
     text: "France is an honest and dedicated programmer. He is capable and has shown out-of-the-box thinking and workarounds more than once when we have obstacles. I recommend using his services.",
     date: "Apr 22, 2025",
     rating: 5,
+    author: "Mohammed A.",
+    source: "Upwork",
     badges: [],
   },
 ];
@@ -305,7 +306,7 @@ const HELP_LINES = [
   `  ${pad("help", 12)}this list`,
   `  ${pad("whoami", 12)}about the developer`,
   `  ${pad("contact", 12)}email + phone + location`,
-  `  ${pad("skills", 12)}proficiency, honestly measured`,
+  `  ${pad("skills", 12)}what i work with`,
   `  ${pad("projects", 12)}live builds + links`,
   `  ${pad("experience", 12)}work history`,
   `  ${pad("socials", 12)}where to find me`,
@@ -327,7 +328,7 @@ const CONTACT_LINES = [
   `${pad("location", 10)}Cavite, Philippines`,
 ];
 
-const SKILLS_LINES = SKILLS.map((s) => `${pad(s.name, 26)}${s.level}%`);
+const SKILLS_LINES = SKILLS.map((s) => `${pad(s.name, 26)}${s.tech}`);
 
 const PROJECTS_LINES = PORTFOLIO_ITEMS.map(
   (p) => `${p.title} — ${p.url && p.url !== "#" ? p.url : "link coming soon"}`
@@ -1064,20 +1065,6 @@ function App() {
                   Contact
                 </a>
               </div>
-
-              <div className="stat-bars">
-                {ATTRIBUTES.map((attr) => (
-                  <div className="stat-bar" key={attr.label}>
-                    <span className="stat-bar-label">{attr.label}</span>
-                    <span className="stat-bar-track">
-                      <span className="stat-bar-fill" style={{ "--value": `${attr.value}%` }} />
-                    </span>
-                    <span className="stat-bar-value">
-                      <CountUp value={attr.value} />
-                    </span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             <div className="hero-visual fx-anim fx-anim-right" data-reveal>
@@ -1244,9 +1231,6 @@ function App() {
                   <h3>{skill.name}</h3>
                   <p className="skill-tech">{skill.tech}</p>
                   <p className="skill-accent">{skill.accent}</p>
-                  <span className="skill-meter">
-                    <span className="skill-meter-fill" style={{ "--value": `${skill.level}%` }} />
-                  </span>
                 </article>
               ))}
             </div>
@@ -1354,6 +1338,11 @@ function App() {
 
                   <h3 className="review-title">{review.title}</h3>
                   <p className="review-text">&ldquo;{review.text}&rdquo;</p>
+
+                  <div className="review-author-row">
+                    <span className="review-author">{review.author}</span>
+                    <span className="review-source">via {review.source}</span>
+                  </div>
 
                   {review.badges.length > 0 && (
                     <div className="review-badges">
@@ -1791,15 +1780,13 @@ function App() {
         .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         @media (max-width: 900px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) { .skills-grid { grid-template-columns: 1fr; } }
-        .skill-card { display: flex; flex-direction: column; gap: 10px; content-visibility: auto; contain-intrinsic-size: 0 300px; }
+        .skill-card { display: flex; flex-direction: column; gap: 10px; content-visibility: auto; contain-intrinsic-size: 0 260px; }
         .skill-top { display: flex; justify-content: space-between; align-items: center; }
         .skill-icon { font-size: 24px; color: var(--mint); }
         .mod-tag { font-size: 10px; color: rgba(125,255,196,0.5); letter-spacing: 0.15em; }
         .skill-card h3 { font-size: 17px; }
         .skill-tech { font-size: 12px; }
         .skill-accent { font-size: 12px; color: rgba(232,246,238,0.45); }
-        .skill-meter { display: block; height: 5px; background: rgba(125,255,196,0.12); border-radius: 4px; overflow: hidden; margin-top: 6px; }
-        .skill-meter-fill { display: block; height: 100%; width: var(--value); background: linear-gradient(90deg, var(--blue), var(--mint)); }
 
         /* ---- Works / portfolio ---- */
         .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
@@ -1825,12 +1812,15 @@ function App() {
         .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         @media (max-width: 900px) { .reviews-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) { .reviews-grid { grid-template-columns: 1fr; } }
-        .review-card { display: flex; flex-direction: column; gap: 10px; content-visibility: auto; contain-intrinsic-size: 0 260px; }
+        .review-card { display: flex; flex-direction: column; gap: 10px; content-visibility: auto; contain-intrinsic-size: 0 280px; }
         .review-header { display: flex; justify-content: space-between; align-items: center; }
         .review-stars { display: flex; gap: 2px; color: var(--amber); font-size: 13px; }
         .review-date { font-size: 11px; color: var(--ink-dim); }
         .review-title { font-size: 14px; }
         .review-text { font-size: 12.5px; font-style: italic; }
+        .review-author-row { display: flex; align-items: baseline; gap: 8px; padding-top: 2px; }
+        .review-author { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+        .review-source { font-size: 11px; color: rgba(125,255,196,0.6); }
         .review-badges { display: flex; gap: 6px; flex-wrap: wrap; }
         .review-badge { font-size: 10px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--mint); }
 
