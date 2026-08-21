@@ -437,12 +437,15 @@ function App() {
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const closeMenu = () => setIsMenuOpen(false);
 
-  const goToStage = (id) => {
-    setActiveSection(id);
-    closeMenu();
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+const goToStage = (id) => {
+  setActiveSection(id);
+  closeMenu();
+  // Don't wait for the isMenuOpen effect to clear this — scrollIntoView
+  // needs the body scrollable *now*, in this same tick.
+  document.body.style.overflow = "";
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+};
 
   const goRelative = (delta) => {
     const nextIndex = Math.min(STAGES.length - 1, Math.max(0, activeIndex + delta));
