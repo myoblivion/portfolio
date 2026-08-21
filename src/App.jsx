@@ -28,6 +28,7 @@ import profileImage from "./assets/profile.png";
 
 import geniusosPlatformShot from "./assets/sites/geniusos-platform.png";
 import vintageLetterShot from "./assets/sites/vintage-letter-co.png";
+import SealedCo from "./assets/sites/sealed.png";
 import crownHoldemShot from "./assets/sites/crown-holdem.png";
 import stingrayPaymentsShot from "./assets/sites/stingray-city-payments.png";
 import cryptoxShot from "./assets/sites/cryptox-platform.png";
@@ -64,7 +65,7 @@ const HERO_SUBTITLE = "I design and build the systems that keep fast products ru
 const PORTFOLIO_ITEMS = [
   {
     fig: "01",
-    url: "https://crypto-trading-platform-puce-two.vercel.app/",
+    url: "https://cryptox-mu-nine.vercel.app/",
     title: "CryptoX Exchange",
     description:
       "Institutional-grade crypto trading platform with a live market terminal, real-time order books, and secure custody onboarding for fast-moving traders.",
@@ -76,8 +77,8 @@ const PORTFOLIO_ITEMS = [
     url: "https://app.theoreka.com/login",
     title: "Theoreka",
     description:
-      "Full-stack platform with a secure login and authenticated app experience, built for reliable day-to-day use.",
-    tech: ["React", "Node.js", "Auth"],
+      "AI-powered systematic review platform that helps researchers screen studies, analyze papers, and streamline evidence synthesis.",
+    tech: ["React", "Python", "Firebase", "AI"],
     screenshot: theorekaShot,
   },
   {
@@ -89,15 +90,15 @@ const PORTFOLIO_ITEMS = [
     tech: ["React", "Node.js", "AWS"],
     screenshot: geniusosPlatformShot,
   },
-  {
-    fig: "04",
-    url: "https://vintageletter.co/",
-    title: "Vintage Letter Co.",
-    description:
-      "E-commerce platform with integrated AI chatbot capabilities and a polished content-first shopping experience.",
-    tech: ["WordPress", "PHP", "Gutenberg"],
-    screenshot: vintageLetterShot,
-  },
+{
+  fig: "04",
+  url: "https://sealed-co.vercel.app/",
+  title: "Sealed Co",
+  description:
+    "Digital letter creation platform with customizable vintage designs, personalized stationery, and an immersive writing experience.",
+  tech: ["WordPress", "PHP", "Gutenberg"],
+  screenshot: SealedCo,
+},
   {
     fig: "05",
     url: "https://crownholdem.com/",
@@ -116,6 +117,15 @@ const PORTFOLIO_ITEMS = [
     tech: ["Laravel", "API Integration"],
     screenshot: stingrayPaymentsShot,
   },
+  {
+  fig: "07",
+  url: "https://vintageletter.co/",
+  title: "Vintage Letter Co.",
+  description:
+    "Digital letter creation platform with customizable vintage designs, personalized stationery, and an immersive writing experience.",
+  tech: ["WordPress", "PHP", "Gutenberg"],
+  screenshot: vintageLetterShot,
+},
 ];
 
 const SKILLS = [
