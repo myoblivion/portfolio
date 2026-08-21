@@ -26,13 +26,12 @@ import { AiOutlineLink } from "react-icons/ai";
 import { FaReact, FaNodeJs, FaWordpress } from "react-icons/fa";
 import profileImage from "./assets/profile.png";
 
-import playsafe88Shot from "./assets/sites/playsafe88.png";
 import geniusosPlatformShot from "./assets/sites/geniusos-platform.png";
 import vintageLetterShot from "./assets/sites/vintage-letter-co.png";
 import crownHoldemShot from "./assets/sites/crown-holdem.png";
 import stingrayPaymentsShot from "./assets/sites/stingray-city-payments.png";
-import dartOfRositaShot from "./assets/sites/d-art-of-rosita.png";
 import cryptoxShot from "./assets/sites/cryptox-platform.png";
+import theorekaShot from "./assets/sites/theoreka.png";
 
 /* ----------------------------------------------------------------------
    This build is a "level select" scroll experience: six full-viewport
@@ -74,33 +73,15 @@ const PORTFOLIO_ITEMS = [
   },
   {
     fig: "02",
-    url: "#",
-    title: "D' Art of Rosita",
+    url: "https://app.theoreka.com/login",
+    title: "Theoreka",
     description:
-      "Dynamic web application featuring responsive modern styling and robust backend integration for seamless data management.",
-    tech: ["React", "Vite", "SCSS", "Supabase"],
-    screenshot: dartOfRositaShot,
+      "Full-stack platform with a secure login and authenticated app experience, built for reliable day-to-day use.",
+    tech: ["React", "Node.js", "Auth"],
+    screenshot: theorekaShot,
   },
   {
     fig: "03",
-    url: "http://playsafe88.com/",
-    title: "Playsafe88",
-    description:
-      "Custom high-performance casino forum and community platform built for speed, clarity, and stable user flows.",
-    tech: ["React", "Python", "Performance"],
-    screenshot: playsafe88Shot,
-  },
-  {
-    fig: "04",
-    url: "#",
-    title: "FeedScrapper AI",
-    description:
-      "Automated content migration tool utilizing local LLM workflows for structured parsing and transformation.",
-    tech: ["React", "Python", "Ollama AI"],
-    screenshot: null,
-  },
-  {
-    fig: "05",
     url: "https://geniusos.co/",
     title: "geniusOS Platform",
     description:
@@ -109,16 +90,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: geniusosPlatformShot,
   },
   {
-    fig: "06",
-    url: "https://t.me/vip_reward_bot",
-    title: "VIP Rewards Telegram Bot",
-    description:
-      "Automated referral logic and persistent data handling deployed on DigitalOcean for reliable user automation.",
-    tech: ["Node.js", "Telegram API", "MongoDB"],
-    screenshot: null,
-  },
-  {
-    fig: "07",
+    fig: "04",
     url: "https://vintageletter.co/",
     title: "Vintage Letter Co.",
     description:
@@ -127,7 +99,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: vintageLetterShot,
   },
   {
-    fig: "08",
+    fig: "05",
     url: "https://crownholdem.com/",
     title: "Crown Holdem",
     description:
@@ -136,7 +108,7 @@ const PORTFOLIO_ITEMS = [
     screenshot: crownHoldemShot,
   },
   {
-    fig: "09",
+    fig: "06",
     url: "https://stingraycitypayment.com/",
     title: "Stingray City Payments",
     description:
