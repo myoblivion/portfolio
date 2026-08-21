@@ -1683,7 +1683,7 @@ const goToStage = (id) => {
             transition: transform 0.3s ease; z-index: 55; border-left: 1px solid var(--border);
           }
           .menu-items.active { transform: translateX(0); }
-          .menu-backdrop.active { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 52; }
+          .menu-backdrop.active { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 48; }
         }
 
         /* ---- Hero ---- */
