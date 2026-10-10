@@ -30,7 +30,7 @@ const NAV = [
 const SUBTITLE = "I design and build the systems that keep fast products running.";
 
 const WORKS = [
-  { url: "http://telatropika.com/", title: "Tela Tropika", description: "Textile and fabric storefront with a clean catalog experience, easy product browsing, and a responsive layout built for online shoppers.", tech: ["WordPress", "WooCommerce", "PHP"], shot: telaTropikaShot },
+  { url: "http://telatropika.com/", title: "Tela Tropika", description: "Textile and fabric storefront with a clean catalog experience, easy product browsing, and a responsive layout built for online shoppers.", tech: ["React", "Vercel", "Responsive UI"], shot: telaTropikaShot },
   { url: "https://ck-d-iaz.vercel.app/", title: "CK Diaz", description: "Polished, fast-loading brand website with modern layout systems, smooth interactions, and a presentation built to make a strong first impression.", tech: ["React", "Vercel", "Responsive UI"], shot: ckDiazShot },
   { url: "https://spin-asia-textile.vercel.app/", title: "Spin Asia Textile", description: "Corporate website for a textile manufacturer, showcasing products, capabilities, and company story with a clear, professional design.", tech: ["React", "Vercel", "Responsive UI"], shot: spinAsiaShot },
   { url: "https://app.theoreka.com/login", title: "Theoreka", description: "AI-powered systematic review platform that helps researchers screen studies, analyze papers, and streamline evidence synthesis.", tech: ["React", "Python", "Firebase", "AI"], shot: theorekaShot },
