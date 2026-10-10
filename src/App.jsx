@@ -28,7 +28,7 @@ const NAV = [
 ];
 
 const SUBTITLE = "I design and build the systems that keep fast products running.";
-
+ 
 const WORKS = [
   { url: "http://telatropika.com/", title: "Tela Tropika", description: "Textile and fabric storefront with a clean catalog experience, easy product browsing, and a responsive layout built for online shoppers.", tech: ["React", "Vercel", "Responsive UI"], shot: telaTropikaShot },
   { url: "https://ck-d-iaz.vercel.app/", title: "CK Diaz", description: "Polished, fast-loading brand website with modern layout systems, smooth interactions, and a presentation built to make a strong first impression.", tech: ["React", "Vercel", "Responsive UI"], shot: ckDiazShot },
